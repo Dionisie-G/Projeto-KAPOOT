@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KAPOOT - Quizes Divertidos</title>
+  <style>
+    :root {
+      --azul: #3492FC;
+      --amarelo: #E8DA31;
+      --branco: #FFFFFF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 30%),
+        radial-gradient(circle at 86% 16%, rgba(232, 218, 49, 0.3) 0%, rgba(232, 218, 49, 0) 26%),
+        radial-gradient(circle at 24% 86%, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 28%),
+        radial-gradient(circle at 78% 80%, rgba(125, 196, 255, 0.2) 0%, rgba(125, 196, 255, 0) 34%),
+        linear-gradient(155deg, #2a76d6 0%, #2f87ea 38%, #3492fc 58%, #2a78d8 100%);
+      color: var(--branco);
+      min-height: 100vh;
+      line-height: 1.5;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(circle at center, black 45%, transparent 92%);
+      opacity: 0.22;
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -15% -10%;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 24%),
+        radial-gradient(circle at 78% 68%, rgba(232, 218, 49, 0.2) 0%, rgba(232, 218, 49, 0) 22%),
+        radial-gradient(circle at 56% 45%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 18%);
+      filter: blur(8px);
+      mix-blend-mode: screen;
+      opacity: 0.55;
+      animation: ambientGlow 16s ease-in-out infinite alternate;
+      z-index: -1;
+    }
+
+    @keyframes ambientGlow {
+      0% {
+        transform: translate3d(-2%, -1%, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(2%, 1.5%, 0) scale(1.04);
+      }
+      100% {
+        transform: translate3d(0.5%, -1.2%, 0) scale(1.02);
+      }
+    }
+
+    .container {
+      width: min(1100px, 92%);
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 1.2rem 0;
+      border-bottom: 1px solid rgba(232, 218, 49, 0.65);
+      backdrop-filter: blur(6px);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      color: var(--branco);
+      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+    }
+
+    .logo span {
+      color: var(--amarelo);
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--branco);
+      text-decoration: none;
+      border: 2px solid transparent;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      transition: 0.25s ease;
+    }
+
+    .nav-links a:hover {
+      border-color: var(--amarelo);
+      color: var(--amarelo);
+      background-color: rgba(255, 255, 255, 0.07);
+    }
+
+    .hero {
+      padding: 4.5rem 0 2.3rem;
+      text-align: center;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      margin-bottom: 1rem;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid rgba(232, 218, 49, 0.85);
+      border-radius: 999px;
+      background-color: rgba(255, 255, 255, 0.09);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: 1rem;
+      line-height: 1.15;
+      text-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.9rem 1.35rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      border: 2px solid var(--amarelo);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.25s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--amarelo);
+      color: #1b1b1b;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--branco);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      opacity: 0.98;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+    }
+
+    .stats {
+      margin: 0 auto 1.1rem;
+      width: min(760px, 100%);
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 0.8rem;
+    }
+
+    .stat {
+      padding: 0.85rem 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(3px);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.1rem;
+      color: var(--amarelo);
+    }
+
+    .stat span {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .features {
+      position: relative;
+      height: 205px;
+      margin: 2rem 0 4rem;
+      overflow: hidden;
+      background-color: transparent;
+      width: 100vw;
+      left: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+    }
+
+    .card {
+      --delay: 0s;
+      --duration: 14s;
+      --jump: 22px;
+
+      position: absolute;
+      top: 46px;
+      left: -320px;
+      width: 270px;
+      border: 1px solid rgba(232, 218, 49, 0.95);
+      border-radius: 16px;
+      padding: 1.2rem;
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+      backdrop-filter: blur(4px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+      animation: cardRunJump var(--duration) linear infinite;
+      animation-delay: var(--delay);
+    }
+
+    .card h3 {
+      margin-bottom: 0.6rem;
+      color: var(--amarelo);
+    }
+
+    .card:nth-child(1) { --delay: 0s; --duration: 14s; --jump: 22px; }
+    .card:nth-child(2) { --delay: 3.5s; --duration: 14s; --jump: 22px; }
+    .card:nth-child(3) { --delay: 7s; --duration: 14s; --jump: 22px; }
+    .card:nth-child(4) { --delay: 10.5s; --duration: 14s; --jump: 22px; }
+
+    @keyframes cardRunJump {
+      0% {
+        transform: translateX(0) translateY(0);
+      }
+      12.5% {
+        transform: translateX(16vw) translateY(calc(var(--jump) * -1));
+      }
+      25% {
+        transform: translateX(32vw) translateY(0);
+      }
+      37.5% {
+        transform: translateX(48vw) translateY(calc(var(--jump) * -1));
+      }
+      50% {
+        transform: translateX(64vw) translateY(0);
+      }
+      62.5% {
+        transform: translateX(80vw) translateY(calc(var(--jump) * -1));
+      }
+      75% {
+        transform: translateX(96vw) translateY(0);
+      }
+      87.5% {
+        transform: translateX(112vw) translateY(calc(var(--jump) * -1));
+      }
+      100% {
+        transform: translateX(calc(128vw + 360px)) translateY(0);
+      }
+    }
+
+    footer {
+      border-top: 1px solid rgba(232, 218, 49, 0.65);
+      padding: 1rem 0;
+      text-align: center;
+      font-size: 0.95rem;
+      opacity: 0.95;
+    }
+
+    @media (max-width: 780px) {
+      .stats {
+        grid-template-columns: 1fr;
+        max-width: 330px;
+      }
+
+      .features {
+        height: 235px;
+      }
+
+      .card {
+        width: 240px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">KA<span>POOT</span></div>
+        <ul class="nav-links">
+          <li><a href="#">Início</a></li>
+          <li><a href="#">Categorias</a></li>
+          <li><a href="ranking.html">Ranking</a></li>
+          <li><a href="login.html">Entrar</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <span class="hero-tag">Plataforma de quizes em direto</span>
+      <h1>Bem-vindo ao KAPOOT</h1>
+      <p>
+        O teu site de quizes para desafiar amigos, testar conhecimentos e aprender
+        de forma divertida. Joga em segundos e sobe no ranking!
+      </p>
+      <div class="stats">
+        <div class="stat"><strong>+20</strong><span>Quizes ativos</span></div>
+        <div class="stat"><strong>+16</strong><span>Jogadores</span></div>
+        <div class="stat"><strong>24/7</strong><span>Diversao online</span></div>
+      </div>
+      <div class="hero-buttons">
+        <a class="btn btn-primary" href="#">Começar Quiz</a>
+        <a class="btn btn-secondary" href="register.html">Criar Conta</a>
+      </div>
+    </section>
+
+    <section class="features">
+      <article class="card">
+        <h3>Quizes Rápidos</h3>
+        <p>Partidas curtas e dinâmicas para jogares em qualquer momento.</p>
+      </article>
+      <article class="card">
+        <h3>Multijogador</h3>
+        <p>Convida amigos e descobre quem sabe mais sobre cada tema.</p>
+      </article>
+      <article class="card">
+        <h3>Diversas Categorias</h3>
+        <p>História, ciência, música, desporto e muito mais.</p>
+      </article>
+      <article class="card">
+        <h3>Ranking</h3>
+        <p>Ganha pontos, melhora a tua posição e conquista o topo.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">© 2026 KAPOOT - Todos os direitos reservados.</div>
+  </footer>
+</body>
+</html>
