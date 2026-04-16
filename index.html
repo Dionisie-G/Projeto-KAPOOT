@@ -63,15 +63,9 @@
     }
 
     @keyframes ambientGlow {
-      0% {
-        transform: translate3d(-2%, -1%, 0) scale(1);
-      }
-      50% {
-        transform: translate3d(2%, 1.5%, 0) scale(1.04);
-      }
-      100% {
-        transform: translate3d(0.5%, -1.2%, 0) scale(1.02);
-      }
+      0%   { transform: translate3d(-2%, -1%, 0) scale(1); }
+      50%  { transform: translate3d(2%, 1.5%, 0) scale(1.04); }
+      100% { transform: translate3d(0.5%, -1.2%, 0) scale(1.02); }
     }
 
     .container {
@@ -98,6 +92,8 @@
       letter-spacing: 1.4px;
       color: var(--branco);
       text-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+      text-decoration: none;
+      cursor: pointer;
     }
 
     .logo span {
@@ -124,6 +120,37 @@
       border-color: var(--amarelo);
       color: var(--amarelo);
       background-color: rgba(255, 255, 255, 0.07);
+    }
+
+    .nav-links a.active {
+      border-color: var(--amarelo);
+      color: var(--amarelo);
+      background-color: rgba(255, 255, 255, 0.07);
+    }
+
+    /* Toast de notificação */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(20, 20, 20, 0.93);
+      color: #fff;
+      padding: 0.75rem 1.4rem;
+      border-radius: 12px;
+      border: 1px solid rgba(232, 218, 49, 0.5);
+      font-size: 0.95rem;
+      font-weight: 600;
+      z-index: 999;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
 
     .hero {
@@ -173,6 +200,7 @@
       border: 2px solid var(--amarelo);
       box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.25s ease;
+      cursor: pointer;
     }
 
     .btn-primary {
@@ -254,39 +282,21 @@
       color: var(--amarelo);
     }
 
-    .card:nth-child(1) { --delay: 0s; --duration: 14s; --jump: 22px; }
-    .card:nth-child(2) { --delay: 3.5s; --duration: 14s; --jump: 22px; }
-    .card:nth-child(3) { --delay: 7s; --duration: 14s; --jump: 22px; }
+    .card:nth-child(1) { --delay: 0s;    --duration: 14s; --jump: 22px; }
+    .card:nth-child(2) { --delay: 3.5s;  --duration: 14s; --jump: 22px; }
+    .card:nth-child(3) { --delay: 7s;    --duration: 14s; --jump: 22px; }
     .card:nth-child(4) { --delay: 10.5s; --duration: 14s; --jump: 22px; }
 
     @keyframes cardRunJump {
-      0% {
-        transform: translateX(0) translateY(0);
-      }
-      12.5% {
-        transform: translateX(16vw) translateY(calc(var(--jump) * -1));
-      }
-      25% {
-        transform: translateX(32vw) translateY(0);
-      }
-      37.5% {
-        transform: translateX(48vw) translateY(calc(var(--jump) * -1));
-      }
-      50% {
-        transform: translateX(64vw) translateY(0);
-      }
-      62.5% {
-        transform: translateX(80vw) translateY(calc(var(--jump) * -1));
-      }
-      75% {
-        transform: translateX(96vw) translateY(0);
-      }
-      87.5% {
-        transform: translateX(112vw) translateY(calc(var(--jump) * -1));
-      }
-      100% {
-        transform: translateX(calc(128vw + 360px)) translateY(0);
-      }
+      0%    { transform: translateX(0)                   translateY(0); }
+      12.5% { transform: translateX(16vw)                translateY(calc(var(--jump) * -1)); }
+      25%   { transform: translateX(32vw)                translateY(0); }
+      37.5% { transform: translateX(48vw)                translateY(calc(var(--jump) * -1)); }
+      50%   { transform: translateX(64vw)                translateY(0); }
+      62.5% { transform: translateX(80vw)                translateY(calc(var(--jump) * -1)); }
+      75%   { transform: translateX(96vw)                translateY(0); }
+      87.5% { transform: translateX(112vw)               translateY(calc(var(--jump) * -1)); }
+      100%  { transform: translateX(calc(128vw + 360px)) translateY(0); }
     }
 
     footer {
@@ -302,52 +312,54 @@
         grid-template-columns: 1fr;
         max-width: 330px;
       }
-
-      .features {
-        height: 235px;
-      }
-
-      .card {
-        width: 240px;
-      }
+      .features { height: 235px; }
+      .card { width: 240px; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Toast de notificação global -->
+  <div id="toast" role="status" aria-live="polite"></div>
+
   <header>
     <div class="container">
-      <nav>
-        <div class="logo">KA<span>POOT</span></div>
-        <ul class="nav-links">
-          <li><a href="#">Início</a></li>
-          <li><a href="#">Categorias</a></li>
-          <li><a href="ranking.html">Ranking</a></li>
-          <li><a href="login.html">Entrar</a></li>
+      <nav aria-label="Navegação principal">
+        <!-- Logo clicável leva sempre ao início -->
+        <a class="logo" href="index.html" aria-label="KAPOOT - Página inicial">KA<span>POOT</span></a>
+
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html"      id="navInicio">Início</a></li>
+          <li><a href="categorias.html" id="navCategorias">Categorias</a></li>
+          <li><a href="ranking.html"    id="navRanking">Ranking</a></li>
+          <!-- Entrar / Sair — gerido pelo JS -->
+          <li id="navAuthItem"><a href="#" id="navAuthLink">Entrar</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main class="container">
-    <section class="hero">
+    <section class="hero" aria-labelledby="heroTitle">
       <span class="hero-tag">Plataforma de quizes em direto</span>
-      <h1>Bem-vindo ao KAPOOT</h1>
+      <h1 id="heroTitle">Bem-vindo ao KAPOOT</h1>
       <p>
         O teu site de quizes para desafiar amigos, testar conhecimentos e aprender
         de forma divertida. Joga em segundos e sobe no ranking!
       </p>
-      <div class="stats">
-        <div class="stat"><strong>+20</strong><span>Quizes ativos</span></div>
-        <div class="stat"><strong>+16</strong><span>Jogadores</span></div>
-        <div class="stat"><strong>24/7</strong><span>Diversao online</span></div>
+      <div class="stats" role="list" aria-label="Estatísticas da plataforma">
+        <div class="stat" role="listitem"><strong>+20</strong><span>Quizes ativos</span></div>
+        <div class="stat" role="listitem"><strong>+16</strong><span>Jogadores</span></div>
+        <div class="stat" role="listitem"><strong>24/7</strong><span>Diversão online</span></div>
       </div>
       <div class="hero-buttons">
-        <a class="btn btn-primary" href="#">Começar Quiz</a>
-        <a class="btn btn-secondary" href="register.html">Criar Conta</a>
+        <!-- Botões geridos pelo JS conforme estado de sessão -->
+        <button class="btn btn-primary"   id="btnComeco">Começar Quiz</button>
+        <button class="btn btn-secondary" id="btnConta">Criar Conta</button>
       </div>
     </section>
 
-    <section class="features">
+    <section class="features" aria-label="Funcionalidades em destaque">
       <article class="card">
         <h3>Quizes Rápidos</h3>
         <p>Partidas curtas e dinâmicas para jogares em qualquer momento.</p>
@@ -370,5 +382,154 @@
   <footer>
     <div class="container">© 2026 KAPOOT - Todos os direitos reservados.</div>
   </footer>
+
+  <script>
+    /* =====================================================
+       KAPOOT — Lógica de cliente  (index.html)
+       =====================================================
+
+       INTEGRAÇÃO COM O TEU PHP:
+       -------------------------------------------------
+       Após login bem-sucedido no login.php, faz:
+           session_start();
+           $_SESSION['loggedin'] = true;
+           $_SESSION['username'] = $nome;
+           header('Location: index.html?msg=login_ok&user=' . urlencode($nome));
+
+       Após logout no logout.php:
+           session_start();
+           session_destroy();
+           header('Location: index.html?msg=logout_ok');
+
+       Após registo no register.php:
+           header('Location: login.html?msg=registo_ok');
+
+       O JS lê os parâmetros da URL e guarda no sessionStorage.
+       ===================================================== */
+
+    /* ---- Helpers de sessão ---- */
+    const estaLogado = () => sessionStorage.getItem('kapoot_loggedin') === '1';
+
+    /* ---- Toast ---- */
+    let _toastTimer = null;
+    function mostrarToast(msg, duracao = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(() => toast.classList.remove('show'), duracao);
+    }
+
+    /* ---- Link activo na nav ---- */
+    function marcarNavActivo() {
+      const pagina = location.pathname.split('/').pop() || 'index.html';
+      document.querySelectorAll('.nav-links a').forEach(a => {
+        const destino = a.getAttribute('href').split('/').pop();
+        const isActivo = destino === pagina;
+        a.classList.toggle('active', isActivo);
+        if (isActivo) a.setAttribute('aria-current', 'page');
+        else          a.removeAttribute('aria-current');
+      });
+    }
+
+    /* ---- Nav: Entrar / Sair ---- */
+    function atualizarNav() {
+      const link = document.getElementById('navAuthLink');
+
+      if (estaLogado()) {
+        const nome = sessionStorage.getItem('kapoot_user') || '';
+        link.textContent = nome ? `Sair (${nome})` : 'Sair';
+        link.href = '#';
+        link.onclick = (e) => {
+          e.preventDefault();
+          confirmarLogout();
+        };
+      } else {
+        link.textContent = 'Entrar';
+        /* Se não tiver conta, ao clicar em "Entrar" vai para login.
+           O login.php trata de redirecionar para register.html caso o utilizador não exista. */
+        link.href = 'login.html';
+        link.onclick = null;
+      }
+    }
+
+    /* ---- Logout com confirmação ---- */
+    function confirmarLogout() {
+      if (!confirm('Tens a certeza que queres sair?')) return;
+      sessionStorage.removeItem('kapoot_loggedin');
+      sessionStorage.removeItem('kapoot_user');
+      /* Redireciona para o logout.php que destrói a sessão PHP,
+         e que depois redireciona de volta para index.html?msg=logout_ok */
+      window.location.href = 'logout.php';
+    }
+
+    /* ---- Botões hero ---- */
+    function atualizarBotoes() {
+      const btnComeco = document.getElementById('btnComeco');
+      const btnConta  = document.getElementById('btnConta');
+
+      if (estaLogado()) {
+        btnComeco.textContent = 'Começar Quiz';
+        btnComeco.onclick = () => { window.location.href = 'quiz.html'; };
+
+        btnConta.textContent = 'O meu perfil';
+        btnConta.onclick = () => { window.location.href = 'perfil.html'; };
+      } else {
+        btnComeco.textContent = 'Começar Quiz';
+        btnComeco.onclick = () => {
+          /* Guarda destino para redirecionar após login bem-sucedido */
+          sessionStorage.setItem('kapoot_redirect', 'quiz.html');
+          mostrarToast('Inicia sessão para jogares! 🎮');
+          setTimeout(() => { window.location.href = 'login.html'; }, 1300);
+        };
+
+        btnConta.textContent = 'Criar Conta';
+        btnConta.onclick = () => { window.location.href = 'register.html'; };
+      }
+    }
+
+    /* ---- Redirecionar após login (se havia destino guardado) ---- */
+    function verificarRedirectPos() {
+      if (!estaLogado()) return;
+      const destino = sessionStorage.getItem('kapoot_redirect');
+      if (destino) {
+        sessionStorage.removeItem('kapoot_redirect');
+        mostrarToast('Sessão iniciada! A redirecionar… 🚀');
+        setTimeout(() => { window.location.href = destino; }, 1500);
+      }
+    }
+
+    /* ---- Ler mensagens e dados vindos do PHP via query string ---- */
+    function processarParams() {
+      const params = new URLSearchParams(location.search);
+      const msg  = params.get('msg');
+      const user = params.get('user');
+
+      /* Guardar sessão no lado do cliente quando o PHP confirma login */
+      if (msg === 'login_ok') {
+        sessionStorage.setItem('kapoot_loggedin', '1');
+        if (user) sessionStorage.setItem('kapoot_user', decodeURIComponent(user));
+        mostrarToast(user ? `Bem-vindo de volta, ${decodeURIComponent(user)}! 👋` : 'Sessão iniciada com sucesso!');
+      } else if (msg === 'logout_ok') {
+        sessionStorage.removeItem('kapoot_loggedin');
+        sessionStorage.removeItem('kapoot_user');
+        mostrarToast('Sessão terminada. Até já! 👋');
+      } else if (msg === 'registo_ok') {
+        mostrarToast('Conta criada com sucesso! Já podes entrar. ✅');
+      }
+
+      /* Remove os parâmetros da URL sem recarregar a página */
+      if (msg) history.replaceState({}, '', location.pathname);
+    }
+
+    /* ---- Init ---- */
+    document.addEventListener('DOMContentLoaded', () => {
+      processarParams();   /* 1.º — processa params e actualiza sessionStorage */
+      marcarNavActivo();   /* 2.º — destaca link activo */
+      atualizarNav();      /* 3.º — Entrar vs Sair */
+      atualizarBotoes();   /* 4.º — botões hero */
+      verificarRedirectPos(); /* 5.º — redireciona se havia destino pendente */
+    });
+  </script>
 </body>
 </html>
