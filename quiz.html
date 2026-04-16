@@ -1,291 +1,308 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Kapoot</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KAPOOT | Play</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d6efd;
+      --accent: #ffd54a;
+      --accent-dark: #f2bf18;
+      --white: #ffffff;
+      --glass: rgba(255, 255, 255, 0.12);
+      --glass-border: rgba(255, 255, 255, 0.22);
+      --danger: #ff5e5e;
+      --success: #2ecc71;
+    }
 
-<style>
-/* ====== TEU CSS (RESUMIDO MAS COMPLETO FUNCIONAL) ====== */
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-font-family:Segoe UI;
-background:linear-gradient(135deg,#f5f7fa,#e9ecf1);
-display:flex;justify-content:center;align-items:center;min-height:100vh
-}
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
-.screen{display:none}
-.screen.active{display:block}
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0c52c7 0%, #0a78ff 45%, #43b8ff 100%);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
 
-.container{text-align:center;width:90%}
-h1{color:#3492FC;margin-bottom:20px}
+    /* Background decorativo igual ao Login */
+    .bg-blur {
+      position: fixed; inset: 0; pointer-events: none; z-index: -1;
+    }
+    .bg-blur span {
+      position: absolute; border-radius: 50%; background: rgba(255,255,255,0.08); filter: blur(40px);
+    }
 
-.quiz-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-}
+    header {
+      padding: 20px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--glass-border);
+    }
 
-.quiz-card{
-background:white;
-padding:20px;
-border-radius:10px;
-cursor:pointer;
-border:2px solid #E8DA31;
-}
+    .logo { font-size: 1.8rem; font-weight: 800; color: var(--accent); text-decoration: none; }
 
-.quiz-container{
-background:white;
-padding:25px;
-border-radius:12px;
-width:90%;
-max-width:800px;
-}
+    .screen { display: none; padding: 40px 7%; flex-direction: column; align-items: center; width: 100%; }
+    .screen.active { display: flex; animation: fadeIn 0.4s ease; }
 
-.answers-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
-margin-top:20px;
-}
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.answer-btn{
-padding:15px;
-border:2px solid #ccc;
-cursor:pointer;
-border-radius:8px;
-}
+    /* Cards e Containers */
+    .glass-card {
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      padding: 40px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+    }
 
-.correct{background:#4dde4d;color:white}
-.wrong{background:#ec5252;color:white}
+    /* Grid de Quizzes (Home) */
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px; width: 100%; max-width: 1000px; margin-top: 30px;
+    }
 
-.timer{
-font-size:22px;
-margin:10px 0;
-font-weight:bold;
-}
+    .quiz-item {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      padding: 30px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .quiz-item:hover { transform: translateY(-5px); background: rgba(255,255,255,0.2); border-color: var(--accent); }
 
-.progress-bar{
-height:8px;
-background:#ddd;
-margin:15px 0;
-border-radius:10px;
-overflow:hidden;
-}
-.progress-fill{
-height:100%;
-background:#3492FC;
-width:0%;
-}
+    /* Estilo do Quiz Ativo */
+    .timer-bar {
+      width: 100%; height: 8px; background: rgba(255,255,255,0.1);
+      border-radius: 10px; margin: 20px 0; overflow: hidden;
+    }
+    .timer-fill {
+      height: 100%; width: 100%; background: var(--accent);
+      transition: width 1s linear;
+    }
 
-.results-container{text-align:center}
-.btn{
-margin-top:20px;
-padding:10px 20px;
-cursor:pointer;
-background:#3492FC;
-color:white;
-border:none;
-border-radius:6px;
-}
-</style>
+    .question-text { font-size: 1.8rem; font-weight: 700; margin-bottom: 30px; min-height: 80px; }
+
+    .answers-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%;
+    }
+
+    .answer-btn {
+      padding: 20px; border: none; border-radius: 16px;
+      background: var(--glass); color: white;
+      font-size: 1.1rem; font-weight: 600; cursor: pointer;
+      transition: 0.2s; border: 1px solid var(--glass-border);
+    }
+    .answer-btn:hover { background: rgba(255,255,255,0.2); }
+    
+    .answer-btn.correct { background: var(--success) !important; color: white; border: none; }
+    .answer-btn.wrong { background: var(--danger) !important; color: white; border: none; }
+
+    .btn-main {
+      background: var(--accent); color: #1f2430;
+      padding: 15px 40px; border-radius: 16px; border: none;
+      font-weight: 700; cursor: pointer; transition: 0.3s;
+      margin-top: 30px; font-size: 1rem;
+    }
+    .btn-main:hover { background: #ffe06b; transform: scale(1.05); }
+
+    .score-display { font-size: 1.5rem; color: var(--accent); font-weight: 800; margin-bottom: 10px; }
+
+    @media (max-width: 600px) {
+      .answers-grid { grid-template-columns: 1fr; }
+      .glass-card { padding: 25px; }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- HOME -->
-<div id="homeScreen" class="screen active">
-<div class="container">
-<h1>QUIZ KAPOOT</h1>
-<div id="quizList" class="quiz-grid"></div>
-</div>
-</div>
+  <div class="bg-blur">
+    <span style="width:300px; height:300px; top:10%; left:-100px;"></span>
+    <span style="width:400px; height:400px; bottom:-100px; right:-100px;"></span>
+  </div>
 
-<!-- QUIZ -->
-<div id="quizScreen" class="screen">
-<div class="quiz-container">
-<h2 id="quizTitle"></h2>
+  <header>
+    <a href="#" class="logo" onclick="location.reload()">KAPOOT</a>
+    <div id="headerScore" style="display:none; font-weight:700;">Pontos: <span id="livePoints" style="color:var(--accent)">0</span></div>
+  </header>
 
-<div class="progress-bar">
-<div id="progressFill" class="progress-fill"></div>
-</div>
+  <main id="homeScreen" class="screen active">
+    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Escolha um Desafio</h1>
+    <p style="color: rgba(255,255,255,0.7)">Pronto para testar os teus conhecimentos?</p>
+    <div id="quizList" class="quiz-grid"></div>
+  </main>
 
-<div id="questionCounter"></div>
-<div class="timer" id="timer">30</div>
+  <main id="quizScreen" class="screen">
+    <div class="glass-card">
+      <div id="questionCounter" style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px;"></div>
+      <div class="timer-bar"><div id="timerFill" class="timer-fill"></div></div>
+      
+      <div class="question-text" id="questionText">A carregar pergunta...</div>
 
-<h3 id="questionText"></h3>
+      <div class="answers-grid">
+        <button class="answer-btn" onclick="handleAnswer(0)" id="opt0"></button>
+        <button class="answer-btn" onclick="handleAnswer(1)" id="opt1"></button>
+        <button class="answer-btn" onclick="handleAnswer(2)" id="opt2"></button>
+        <button class="answer-btn" onclick="handleAnswer(3)" id="opt3"></button>
+      </div>
+    </div>
+  </main>
 
-<div class="answers-grid">
-<button class="answer-btn" onclick="checkAnswer(0)" id="a0"></button>
-<button class="answer-btn" onclick="checkAnswer(1)" id="a1"></button>
-<button class="answer-btn" onclick="checkAnswer(2)" id="a2"></button>
-<button class="answer-btn" onclick="checkAnswer(3)" id="a3"></button>
-</div>
+  <main id="resultsScreen" class="screen">
+    <div class="glass-card">
+      <h2 style="font-size: 2rem; margin-bottom: 10px;">Quiz Terminado!</h2>
+      <div class="score-display" id="finalScore">0</div>
+      <p id="feedbackText" style="margin-bottom: 20px;"></p>
+      <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+        <p>Acertos: <span id="correctCount" style="color:var(--success); font-weight:700;"></span></p>
+        <p>Tempo Médio: <span id="avgTime" style="font-weight:700;"></span>s</p>
+      </div>
+      <button class="btn-main" onclick="location.reload()">Voltar ao Menu</button>
+    </div>
+  </main>
 
-<button class="btn" onclick="endQuiz()">Finalizar</button>
-</div>
-</div>
+  <script>
+    const quizzes = [
+      { id: 1, title: "🧬 Biologia", questions: [
+        { q: "Qual o organelo responsável pela produção de energia?", a: ["Ribossoma", "Mitocôndria", "Complexo de Golgi", "Lisossoma"], c: 1 },
+        { q: "Onde se localiza a maior parte do DNA celular?", a: ["Citoplasma", "Membrana", "Núcleo", "Vacúolo"], c: 2 }
+      ]},
+      { id: 2, title: "🌍 Geografia", questions: [
+        { q: "Qual é o maior continente do mundo?", a: ["África", "América", "Ásia", "Europa"], c: 2 },
+        { q: "Qual a capital de Portugal?", a: ["Porto", "Lisboa", "Coimbra", "Braga"], c: 1 }
+      ]},
+      { id: 3, title: "📐 Matemática", questions: [
+        { q: "Quanto é a soma dos ângulos internos de um triângulo?", a: ["90°", "360°", "180°", "270°"], c: 2 },
+        { q: "Qual a fórmula da área do círculo?", a: ["π * r²", "2 * π * r", "Base * Altura", "π * d"], c: 0 }
+      ]}
+    ];
 
-<!-- RESULTS -->
-<div id="resultsScreen" class="screen">
-<div class="results-container">
-<h1 id="resultTitle"></h1>
-<h2 id="scoreText"></h2>
-<p id="extraInfo"></p>
-<button class="btn" onclick="returnToHome()">Menu</button>
-</div>
-</div>
+    let state = {
+      quiz: null,
+      index: 0,
+      points: 0,
+      corrects: 0,
+      timer: null,
+      timeLeft: 20,
+      canAnswer: true
+    };
 
-<script>
-/* ===== QUIZZES (4 COMPLETOS) ===== */
-const quizzes = [
-{
-id:1,
-title:"Biologia",
-questions:[
-{question:"Organelo da energia?",answers:["Núcleo","Mitocôndria","Golgi","Ribossoma"],correct:1},
-{question:"Citoplasma é?",answers:["Núcleo","Fluido celular","Parede","DNA"],correct:1}
-]
-},
-{
-id:2,
-title:"Geografia",
-questions:[
-{question:"Maior continente?",answers:["Europa","Ásia","África","América"],correct:1},
-{question:"Capital Portugal?",answers:["Porto","Lisboa","Faro","Coimbra"],correct:1}
-]
-},
-{
-id:3,
-title:"História",
-questions:[
-{question:"Queda Roma?",answers:["476","1500","1000","200"],correct:0},
-{question:"Descoberta América?",answers:["1492","1500","1600","1400"],correct:0}
-]
-},
-{
-id:4,
-title:"Matemática",
-questions:[
-{question:"Ângulos triângulo?",answers:["90","180","360","270"],correct:1},
-{question:"Área círculo?",answers:["πr²","2πr","πd","r²"],correct:0}
-]
-}
-];
+    window.onload = () => {
+      const list = document.getElementById("quizList");
+      quizzes.forEach(q => {
+        const div = document.createElement("div");
+        div.className = "quiz-item";
+        div.innerText = q.title;
+        div.onclick = () => startQuiz(q.id);
+        list.appendChild(div);
+      });
+    };
 
-/* ===== VARIÁVEIS ===== */
-let currentQuiz,currentQuestion,score,timeLeft,timer,startTime;
+    function startQuiz(id) {
+      state.quiz = quizzes.find(q => q.id === id);
+      state.index = 0;
+      state.points = 0;
+      state.corrects = 0;
+      document.getElementById("headerScore").style.display = "block";
+      showScreen("quizScreen");
+      loadQuestion();
+    }
 
-/* ===== INIT ===== */
-window.onload=loadQuizzes;
+    function loadQuestion() {
+      state.canAnswer = true;
+      state.timeLeft = 20;
+      const q = state.quiz.questions[state.index];
+      
+      document.getElementById("questionCounter").innerText = `PERGUNTA ${state.index + 1} DE ${state.quiz.questions.length}`;
+      document.getElementById("questionText").innerText = q.q;
+      
+      q.a.forEach((text, i) => {
+        const btn = document.getElementById(`opt${i}`);
+        btn.innerText = text;
+        btn.className = "answer-btn";
+      });
 
-/* ===== FUNÇÕES ===== */
-function loadQuizzes(){
-const list=document.getElementById("quizList");
-list.innerHTML="";
-quizzes.forEach(q=>{
-const div=document.createElement("div");
-div.className="quiz-card";
-div.innerText=q.title;
-div.onclick=()=>startQuiz(q.id);
-list.appendChild(div);
-});
-}
+      startTimer();
+    }
 
-function startQuiz(id){
-currentQuiz=quizzes.find(q=>q.id===id);
-currentQuestion=0;
-score=0;
-startTime=Date.now();
-showScreen("quizScreen");
-showQuestion();
-}
+    function startTimer() {
+      const fill = document.getElementById("timerFill");
+      fill.style.transition = "none";
+      fill.style.width = "100%";
+      
+      clearInterval(state.timer);
+      state.timer = setInterval(() => {
+        state.timeLeft -= 1;
+        fill.style.transition = "width 1s linear";
+        fill.style.width = (state.timeLeft / 20 * 100) + "%";
 
-function showQuestion(){
-const q=currentQuiz.questions[currentQuestion];
+        if (state.timeLeft <= 0) {
+          handleAnswer(-1); // Tempo esgotado
+        }
+      }, 1000);
+    }
 
-document.getElementById("quizTitle").innerText=currentQuiz.title;
-document.getElementById("questionText").innerText=q.question;
-document.getElementById("questionCounter").innerText=
-`Pergunta ${currentQuestion+1}/${currentQuiz.questions.length}`;
+    function handleAnswer(choice) {
+      if (!state.canAnswer) return;
+      state.canAnswer = false;
+      clearInterval(state.timer);
 
-document.getElementById("progressFill").style.width=
-(currentQuestion/currentQuiz.questions.length*100)+"%";
+      const correctIndex = state.quiz.questions[state.index].c;
+      const btns = document.querySelectorAll(".answer-btn");
 
-q.answers.forEach((a,i)=>{
-let btn=document.getElementById("a"+i);
-btn.innerText=a;
-btn.className="answer-btn";
-});
+      if (choice === correctIndex) {
+        // Cálculo de pontos estilo Kahoot: Base 500 + (Tempo restante * 25)
+        const bonus = state.timeLeft * 25;
+        state.points += (500 + bonus);
+        state.corrects++;
+        btns[choice].classList.add("correct");
+      } else {
+        if (choice !== -1) btns[choice].classList.add("wrong");
+        btns[correctIndex].classList.add("correct");
+      }
 
-startTimer();
-}
+      document.getElementById("livePoints").innerText = state.points;
 
-function checkAnswer(i){
-const correct=currentQuiz.questions[currentQuestion].correct;
+      setTimeout(() => {
+        state.index++;
+        if (state.index < state.quiz.questions.length) {
+          loadQuestion();
+        } else {
+          showResults();
+        }
+      }, 1500);
+    }
 
-if(i===correct){
-score++;
-document.getElementById("a"+i).classList.add("correct");
-}else{
-document.getElementById("a"+i).classList.add("wrong");
-document.getElementById("a"+correct).classList.add("correct");
-}
+    function showResults() {
+      showScreen("resultsScreen");
+      document.getElementById("headerScore").style.display = "none";
+      document.getElementById("finalScore").innerText = `${state.points} PTS`;
+      document.getElementById("correctCount").innerText = `${state.corrects} / ${state.quiz.questions.length}`;
+      document.getElementById("avgTime").innerText = (20 - state.timeLeft).toFixed(1);
+      
+      const p = (state.corrects / state.quiz.questions.length) * 100;
+      document.getElementById("feedbackText").innerText = p >= 70 ? "Incrível! És um mestre!" : "Bom esforço! Tenta novamente.";
+    }
 
-clearInterval(timer);
-setTimeout(nextQuestion,1500);
-}
-
-function nextQuestion(){
-currentQuestion++;
-if(currentQuestion<currentQuiz.questions.length){
-showQuestion();
-}else{
-endQuiz();
-}
-}
-
-function startTimer(){
-timeLeft=30;
-document.getElementById("timer").innerText=timeLeft;
-
-clearInterval(timer);
-timer=setInterval(()=>{
-timeLeft--;
-document.getElementById("timer").innerText=timeLeft;
-
-if(timeLeft<=0){
-clearInterval(timer);
-nextQuestion();
-}
-},1000);
-}
-
-function endQuiz(){
-clearInterval(timer);
-let totalTime=Math.round((Date.now()-startTime)/1000);
-
-showScreen("resultsScreen");
-
-let percent=Math.round((score/currentQuiz.questions.length)*100);
-
-document.getElementById("resultTitle").innerText="Resultado";
-document.getElementById("scoreText").innerText=
-`${score}/${currentQuiz.questions.length} (${percent}%)`;
-
-document.getElementById("extraInfo").innerText=
-"Tempo: "+totalTime+"s";
-}
-
-function returnToHome(){
-showScreen("homeScreen");
-}
-
-function showScreen(id){
-document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-}
-</script>
-
+    function showScreen(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+  </script>
 </body>
 </html>
