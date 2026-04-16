@@ -1,10 +1,560 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
-  <head>
-    <title>Login</title>
-  </head>
-  <body>
-    <h1>Em desenvolvimento</h1>
-    <button>Entrar</button>
-  </body>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KAPOOT | Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    :root {
+      --primary: #0d6efd;
+      --primary-dark: #084db0;
+      --primary-light: #3ba8ff;
+      --accent: #ffd54a;
+      --accent-dark: #f2bf18;
+      --white: #ffffff;
+      --text-soft: rgba(255,255,255,0.82);
+      --glass: rgba(255, 255, 255, 0.12);
+      --glass-border: rgba(255, 255, 255, 0.22);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.10), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(255,213,74,0.16), transparent 25%),
+        linear-gradient(135deg, #0c52c7 0%, #0a78ff 45%, #43b8ff 100%);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    .background-blur {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .background-blur span {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      filter: blur(8px);
+    }
+
+    .background-blur span:nth-child(1) {
+      width: 220px;
+      height: 220px;
+      top: 12%;
+      left: -70px;
+    }
+
+    .background-blur span:nth-child(2) {
+      width: 320px;
+      height: 320px;
+      bottom: -80px;
+      right: -110px;
+    }
+
+    .background-blur span:nth-child(3) {
+      width: 140px;
+      height: 140px;
+      top: 58%;
+      left: 18%;
+    }
+
+    header {
+      width: 100%;
+      padding: 22px 7%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    nav a {
+      color: rgba(255,255,255,0.88);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.25s ease;
+      position: relative;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: 0.25s ease;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--white);
+    }
+
+    nav a:hover::after,
+    nav a.active::after {
+      width: 100%;
+    }
+
+    .page {
+      min-height: calc(100vh - 88px);
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: center;
+      gap: 48px;
+      padding: 50px 7%;
+    }
+
+    .hero-text .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(10px);
+      margin-bottom: 22px;
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.95);
+    }
+
+    .hero-text h1 {
+      font-size: clamp(2.4rem, 5vw, 4.4rem);
+      line-height: 1.05;
+      margin-bottom: 18px;
+      font-weight: 800;
+    }
+
+    .hero-text h1 span {
+      color: var(--accent);
+    }
+
+    .hero-text p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-soft);
+      max-width: 620px;
+      margin-bottom: 28px;
+    }
+
+    .mini-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 16px;
+      max-width: 650px;
+    }
+
+    .mini-card {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 20px;
+      padding: 18px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+    }
+
+    .mini-card strong {
+      display: block;
+      color: var(--accent);
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+
+    .mini-card span {
+      color: rgba(255,255,255,0.78);
+      font-size: 0.92rem;
+    }
+
+    .login-panel {
+      display: flex;
+      justify-content: center;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 470px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      padding: 34px;
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card::before {
+      content: "";
+      position: absolute;
+      top: -120px;
+      right: -120px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(255, 213, 74, 0.18);
+      filter: blur(10px);
+    }
+
+    .login-card .title {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 8px;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .login-card .subtitle {
+      position: relative;
+      z-index: 1;
+      color: var(--text-soft);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 15px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.10);
+      color: var(--white);
+      outline: none;
+      transition: 0.25s ease;
+      font-size: 0.98rem;
+    }
+
+    .input-wrap input::placeholder {
+      color: rgba(255,255,255,0.55);
+    }
+
+    .input-wrap input:focus {
+      border-color: rgba(255,213,74,0.75);
+      box-shadow: 0 0 0 4px rgba(255,213,74,0.14);
+      background: rgba(255,255,255,0.14);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 8px 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,0.86);
+      font-size: 0.92rem;
+    }
+
+    .checkbox input {
+      accent-color: var(--accent-dark);
+      width: 16px;
+      height: 16px;
+    }
+
+    .link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 15px 18px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #1f2430;
+      box-shadow: 0 12px 30px rgba(255, 213, 74, 0.28);
+      margin-bottom: 14px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      background: #ffe06b;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.24);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 22px 0 18px;
+      color: rgba(255,255,255,0.68);
+      font-size: 0.9rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .socials {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .social-btn {
+      padding: 13px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.08);
+      color: var(--white);
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .social-btn:hover {
+      background: rgba(255,255,255,0.14);
+      transform: translateY(-2px);
+    }
+
+    .register-text {
+      text-align: center;
+      margin-top: 22px;
+      color: rgba(255,255,255,0.78);
+      position: relative;
+      z-index: 1;
+      font-size: 0.95rem;
+    }
+
+    .register-text a {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .register-text a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 1080px) {
+      .page {
+        grid-template-columns: 1fr;
+        padding-top: 36px;
+      }
+
+      .hero-text {
+        text-align: center;
+      }
+
+      .hero-text p,
+      .mini-cards {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 18px 5%;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      nav {
+        gap: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .page {
+        padding: 28px 5% 42px;
+      }
+
+      .login-card {
+        padding: 24px;
+        border-radius: 24px;
+      }
+
+      .mini-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .socials {
+        grid-template-columns: 1fr;
+      }
+
+      .row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-blur">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <header>
+    <a href="#" class="logo">KAPOOT</a>
+    <nav>
+      <a href="#">Início</a>
+      <a href="#">Categorias</a>
+      <a href="#">Ranking</a>
+      <a href="#" class="active">Entrar</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="hero-text">
+      <div class="badge">🔐 Área de acesso dos jogadores</div>
+      <h1>Entra na tua conta e volta ao <span>jogo</span>.</h1>
+      <p>
+        Acede ao teu perfil, acompanha o teu ranking, participa em quizzes em direto
+        e desafia os teus amigos com uma página moderna, elegante e pronta para ser
+        integrada no teu site KAPOOT.
+      </p>
+
+      <div class="mini-cards">
+        <div class="mini-card">
+          <strong>Login rápido</strong>
+          <span>Acesso simples e intuitivo para qualquer utilizador.</span>
+        </div>
+        <div class="mini-card">
+          <strong>Visual premium</strong>
+          <span>Design alinhado com a identidade azul e amarela do site.</span>
+        </div>
+        <div class="mini-card">
+          <strong>Responsivo</strong>
+          <span>Funciona bem no computador, tablet e telemóvel.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="login-panel">
+      <div class="login-card">
+        <h2 class="title">Fazer login</h2>
+        <p class="subtitle">Bem-vindo de volta! Introduz os teus dados para continuares a jogar.</p>
+
+        <form>
+          <div class="form-group">
+            <label for="email">Email ou nome de utilizador</label>
+            <div class="input-wrap">
+              <input type="text" id="email" name="email" placeholder="exemplo@kapoot.pt" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Palavra-passe</label>
+            <div class="input-wrap">
+              <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <label class="checkbox">
+              <input type="checkbox" name="remember">
+              <span>Lembrar-me</span>
+            </label>
+
+            <a href="#" class="link">Esqueceste-te da palavra-passe?</a>
+          </div>
+
+          <button type="submit" class="btn-primary">Entrar agora</button>
+          <button type="button" class="btn-secondary">Criar nova conta</button>
+
+          <div class="divider">ou continua com</div>
+
+          <div class="socials">
+            <button type="button" class="social-btn">Google</button>
+            <button type="button" class="social-btn">Discord</button>
+          </div>
+
+          <p class="register-text">
+            Ainda não tens conta? <a href="#">Regista-te aqui</a>
+          </p>
+        </form>
+      </div>
+    </section>
+  </main>
+</body>
 </html>
