@@ -17,6 +17,7 @@
       --glass-border: rgba(255, 255, 255, 0.22);
       --danger: #ff5e5e;
       --success: #2ecc71;
+      --info: #17a2b8;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -30,7 +31,7 @@
       overflow-x: hidden;
     }
 
-    /* Background decorativo igual ao Login */
+    /* Background decorativo */
     .bg-blur {
       position: fixed; inset: 0; pointer-events: none; z-index: -1;
     }
@@ -70,21 +71,23 @@
     /* Grid de Quizzes (Home) */
     .quiz-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px; width: 100%; max-width: 1000px; margin-top: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px; width: 100%; max-width: 1200px; margin-top: 30px;
     }
 
     .quiz-item {
       background: var(--glass);
       border: 1px solid var(--glass-border);
-      padding: 30px;
+      padding: 30px 20px;
       border-radius: 20px;
       cursor: pointer;
       transition: 0.3s;
       font-weight: 700;
       font-size: 1.2rem;
+      text-align: center;
     }
     .quiz-item:hover { transform: translateY(-5px); background: rgba(255,255,255,0.2); border-color: var(--accent); }
+    .quiz-item small { display: block; font-size: 0.8rem; opacity: 0.7; margin-top: 8px; font-weight: normal; }
 
     /* Estilo do Quiz Ativo */
     .timer-bar {
@@ -96,7 +99,7 @@
       transition: width 1s linear;
     }
 
-    .question-text { font-size: 1.8rem; font-weight: 700; margin-bottom: 30px; min-height: 80px; }
+    .question-text { font-size: 1.6rem; font-weight: 700; margin-bottom: 30px; min-height: 80px; line-height: 1.3; }
 
     .answers-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%;
@@ -105,10 +108,11 @@
     .answer-btn {
       padding: 20px; border: none; border-radius: 16px;
       background: var(--glass); color: white;
-      font-size: 1.1rem; font-weight: 600; cursor: pointer;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
       transition: 0.2s; border: 1px solid var(--glass-border);
+      text-align: left;
     }
-    .answer-btn:hover { background: rgba(255,255,255,0.2); }
+    .answer-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.02); }
     
     .answer-btn.correct { background: var(--success) !important; color: white; border: none; }
     .answer-btn.wrong { background: var(--danger) !important; color: white; border: none; }
@@ -123,9 +127,25 @@
 
     .score-display { font-size: 1.5rem; color: var(--accent); font-weight: 800; margin-bottom: 10px; }
 
+    .loading {
+      text-align: center;
+      padding: 40px;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255,255,255,0.2);
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
     @media (max-width: 600px) {
       .answers-grid { grid-template-columns: 1fr; }
       .glass-card { padding: 25px; }
+      .question-text { font-size: 1.3rem; }
     }
   </style>
 </head>
@@ -134,17 +154,28 @@
   <div class="bg-blur">
     <span style="width:300px; height:300px; top:10%; left:-100px;"></span>
     <span style="width:400px; height:400px; bottom:-100px; right:-100px;"></span>
+    <span style="width:200px; height:200px; top:50%; left:40%;"></span>
   </div>
 
   <header>
     <a href="#" class="logo" onclick="location.reload()">KAPOOT</a>
-    <div id="headerScore" style="display:none; font-weight:700;">Pontos: <span id="livePoints" style="color:var(--accent)">0</span></div>
+    <div id="headerScore" style="display:none; font-weight:700;">🏆 Pontos: <span id="livePoints" style="color:var(--accent)">0</span></div>
   </header>
 
   <main id="homeScreen" class="screen active">
-    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Escolha um Desafio</h1>
-    <p style="color: rgba(255,255,255,0.7)">Pronto para testar os teus conhecimentos?</p>
+    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">🎯 Escolha um Desafio</h1>
+    <p style="color: rgba(255,255,255,0.7)">20 perguntas por tema. Teste os teus conhecimentos!</p>
     <div id="quizList" class="quiz-grid"></div>
+  </main>
+
+  <main id="loadingScreen" class="screen">
+    <div class="glass-card">
+      <div class="loading">
+        <div class="spinner"></div>
+        <h3>A preparar o desafio...</h3>
+        <p>A carregar perguntas 🔥</p>
+      </div>
+    </div>
   </main>
 
   <main id="quizScreen" class="screen">
@@ -160,37 +191,162 @@
         <button class="answer-btn" onclick="handleAnswer(2)" id="opt2"></button>
         <button class="answer-btn" onclick="handleAnswer(3)" id="opt3"></button>
       </div>
+      <div style="margin-top: 20px; font-size: 0.85rem; opacity: 0.6;">⚡ Resposta rápida = mais pontos!</div>
     </div>
   </main>
 
   <main id="resultsScreen" class="screen">
     <div class="glass-card">
-      <h2 style="font-size: 2rem; margin-bottom: 10px;">Quiz Terminado!</h2>
+      <h2 style="font-size: 2rem; margin-bottom: 10px;">🏁 Quiz Terminado!</h2>
       <div class="score-display" id="finalScore">0</div>
       <p id="feedbackText" style="margin-bottom: 20px;"></p>
       <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 15px; margin-bottom: 20px;">
-        <p>Acertos: <span id="correctCount" style="color:var(--success); font-weight:700;"></span></p>
-        <p>Tempo Médio: <span id="avgTime" style="font-weight:700;"></span>s</p>
+        <p>✅ Acertos: <span id="correctCount" style="color:var(--success); font-weight:700;"></span></p>
+        <p>📊 Percentagem: <span id="percentCorrect" style="font-weight:700;"></span>%</p>
       </div>
-      <button class="btn-main" onclick="location.reload()">Voltar ao Menu</button>
+      <button class="btn-main" onclick="location.reload()">🔁 Voltar ao Menu</button>
     </div>
   </main>
 
   <script>
+    // ==================== BANCO DE PERGUNTAS - 5 TEMAS COM 20 PERGUNTAS CADA ====================
     const quizzes = [
-      { id: 1, title: "🧬 Biologia", questions: [
-        { q: "Qual o organelo responsável pela produção de energia?", a: ["Ribossoma", "Mitocôndria", "Complexo de Golgi", "Lisossoma"], c: 1 },
-        { q: "Onde se localiza a maior parte do DNA celular?", a: ["Citoplasma", "Membrana", "Núcleo", "Vacúolo"], c: 2 }
-      ]},
-      { id: 2, title: "🌍 Geografia", questions: [
-        { q: "Qual é o maior continente do mundo?", a: ["África", "América", "Ásia", "Europa"], c: 2 },
-        { q: "Qual a capital de Portugal?", a: ["Porto", "Lisboa", "Coimbra", "Braga"], c: 1 }
-      ]},
-      { id: 3, title: "📐 Matemática", questions: [
-        { q: "Quanto é a soma dos ângulos internos de um triângulo?", a: ["90°", "360°", "180°", "270°"], c: 2 },
-        { q: "Qual a fórmula da área do círculo?", a: ["π * r²", "2 * π * r", "Base * Altura", "π * d"], c: 0 }
-      ]}
+      { id: 1, title: "🧬 Biologia", icon: "🧬", questions: generateBiologyQuestions() },
+      { id: 2, title: "🌍 Geografia", icon: "🌍", questions: generateGeographyQuestions() },
+      { id: 3, title: "📐 Matemática", icon: "📐", questions: generateMathQuestions() },
+      { id: 4, title: "🎬 Cinema", icon: "🎬", questions: generateCinemaQuestions() },
+      { id: 5, title: "⚽ Desporto", icon: "⚽", questions: generateSportsQuestions() }
     ];
+
+    // Biologia - 20 perguntas
+    function generateBiologyQuestions() {
+      return [
+        { q: "Qual o organelo responsável pela produção de energia na célula?", a: ["Ribossoma", "Mitocôndria", "Complexo de Golgi", "Lisossoma"], c: 1 },
+        { q: "Onde se localiza a maior parte do DNA celular?", a: ["Citoplasma", "Membrana", "Núcleo", "Vacúolo"], c: 2 },
+        { q: "Qual é o processo pelo qual as plantas produzem o seu próprio alimento?", a: ["Respiração", "Fermentação", "Fotossíntese", "Transpiração"], c: 2 },
+        { q: "Qual destes é um órgão do sistema respiratório?", a: ["Fígado", "Estômago", "Pulmão", "Rim"], c: 2 },
+        { q: "Quantos cromossomas tem um ser humano normal?", a: ["46", "48", "44", "23"], c: 0 },
+        { q: "Qual a principal função dos glóbulos vermelhos?", a: ["Defesa", "Coagulação", "Transporte de oxigénio", "Produção de anticorpos"], c: 2 },
+        { q: "O que é uma célula procariótica?", a: ["Com núcleo definido", "Sem núcleo definido", "Com mitocôndrias", "Com cloroplastos"], c: 1 },
+        { q: "Qual é o maior osso do corpo humano?", a: ["Tíbia", "Fémur", "Úmero", "Rádio"], c: 1 },
+        { q: "O que significa ADN?", a: ["Ácido Desoxirribonucleico", "Ácido Ribonucleico", "Aminoácido", "Adenosina"], c: 0 },
+        { q: "Qual destes é um mamífero marinho?", a: ["Tubarão", "Salmão", "Golfinho", "Polvo"], c: 2 },
+        { q: "Quantos dentes tem um adulto humano completo?", a: ["28", "30", "32", "34"], c: 2 },
+        { q: "Qual a função do coração?", a: ["Digestão", "Bombear sangue", "Filtrar toxinas", "Produzir hormonas"], c: 1 },
+        { q: "Qual destes é um réptil?", a: ["Sapo", "Salamandra", "Cobra", "Tubarão"], c: 2 },
+        { q: "O que é a clorofila?", a: ["Pigmento verde", "Hormona", "Enzima", "Vitamina"], c: 0 },
+        { q: "Qual a parte do cérebro responsável pela memória?", a: ["Cerebelo", "Hipotálamo", "Hipocampo", "Tronco cerebral"], c: 2 },
+        { q: "O que são os neurónios?", a: ["Células da pele", "Células nervosas", "Células sanguíneas", "Células ósseas"], c: 1 },
+        { q: "Qual é o grupo sanguíneo doador universal?", a: ["A", "B", "AB", "O"], c: 3 },
+        { q: "O que é a medula óssea?", a: ["Tecido adiposo", "Tecido produtor de sangue", "Tecido muscular", "Tecido conjuntivo"], c: 1 },
+        { q: "Quantos pares de costelas tem um humano?", a: ["10", "12", "14", "8"], c: 1 },
+        { q: "Qual destas é uma doença viral?", a: ["Tétano", "Gripe", "Salmonelose", "Malária"], c: 1 }
+      ];
+    }
+
+    // Geografia - 20 perguntas
+    function generateGeographyQuestions() {
+      return [
+        { q: "Qual é o maior continente do mundo?", a: ["África", "América", "Ásia", "Europa"], c: 2 },
+        { q: "Qual a capital de Portugal?", a: ["Porto", "Lisboa", "Coimbra", "Braga"], c: 1 },
+        { q: "Qual é o maior país do mundo em área?", a: ["China", "EUA", "Canadá", "Rússia"], c: 3 },
+        { q: "Qual é o rio mais longo do mundo?", a: ["Amazonas", "Nilo", "Yangtzé", "Mississippi"], c: 1 },
+        { q: "Em que continente fica o Egito?", a: ["Ásia", "Europa", "África", "América"], c: 2 },
+        { q: "Qual a capital do Brasil?", a: ["Rio de Janeiro", "São Paulo", "Brasília", "Salvador"], c: 2 },
+        { q: "Qual é a montanha mais alta do mundo?", a: ["K2", "Everest", "Kangchenjunga", "Makalu"], c: 1 },
+        { q: "Qual oceano é o maior?", a: ["Atlântico", "Índico", "Pacífico", "Ártico"], c: 2 },
+        { q: "Qual destes países é conhecido como 'Terra do Sol Nascente'?", a: ["China", "Coreia", "Japão", "Tailândia"], c: 2 },
+        { q: "Qual a capital de Espanha?", a: ["Barcelona", "Valência", "Madrid", "Sevilha"], c: 2 },
+        { q: "Quantos estados tem os EUA?", a: ["50", "51", "49", "52"], c: 0 },
+        { q: "Qual é o deserto mais grande do mundo (não polar)?", a: ["Gobi", "Saara", "Atacama", "Kalahari"], c: 1 },
+        { q: "Em que país fica a Torre Eiffel?", a: ["Itália", "Alemanha", "França", "Inglaterra"], c: 2 },
+        { q: "Qual destes é um país da América do Sul?", a: ["México", "Panamá", "Chile", "Guatemala"], c: 2 },
+        { q: "Qual a capital da Austrália?", a: ["Sydney", "Melbourne", "Camberra", "Perth"], c: 2 },
+        { q: "Qual é o país mais populoso do mundo?", a: ["Índia", "China", "EUA", "Indonésia"], c: 1 },
+        { q: "Qual o ponto mais baixo da Terra?", a: ["Vale da Morte", "Mar Morto", "Fossa das Marianas", "Lago Assal"], c: 1 },
+        { q: "Em que continente fica o México?", a: ["América do Sul", "América Central", "América do Norte", "Caribe"], c: 2 },
+        { q: "Qual a capital da Rússia?", a: ["São Petersburgo", "Moscovo", "Kiev", "Novosibirsk"], c: 1 },
+        { q: "Qual é o país com mais ilhas do mundo?", a: ["Indonésia", "Filipinas", "Suécia", "Canadá"], c: 2 }
+      ];
+    }
+
+    // Matemática - 20 perguntas
+    function generateMathQuestions() {
+      return [
+        { q: "Quanto é a soma dos ângulos internos de um triângulo?", a: ["90°", "360°", "180°", "270°"], c: 2 },
+        { q: "Qual a fórmula da área do círculo?", a: ["π * r²", "2 * π * r", "Base * Altura", "π * d"], c: 0 },
+        { q: "Quanto é 15% de 200?", a: ["20", "25", "30", "35"], c: 2 },
+        { q: "Qual é a raiz quadrada de 144?", a: ["10", "11", "12", "13"], c: 2 },
+        { q: "Quanto é 7 × 8?", a: ["48", "56", "54", "64"], c: 1 },
+        { q: "Quanto é 100 ÷ 4?", a: ["20", "25", "30", "35"], c: 1 },
+        { q: "Qual é o valor de π (pi) aproximado?", a: ["3,12", "3,14", "3,16", "3,18"], c: 1 },
+        { q: "Quanto é 2⁵?", a: ["16", "32", "64", "128"], c: 1 },
+        { q: "Qual é o próximo número: 2, 4, 8, 16, ?", a: ["24", "32", "30", "28"], c: 1 },
+        { q: "Quanto é ⅓ + ⅓?", a: ["⅓", "½", "⅔", "¾"], c: 2 },
+        { q: "Quantos graus tem um ângulo reto?", a: ["45°", "60°", "90°", "180°"], c: 2 },
+        { q: "Qual é a área de um quadrado com lado 5cm?", a: ["20cm²", "25cm²", "30cm²", "10cm²"], c: 1 },
+        { q: "Quanto é 9 × 9?", a: ["72", "81", "90", "99"], c: 1 },
+        { q: "Qual é a raiz cúbica de 27?", a: ["2", "3", "4", "5"], c: 1 },
+        { q: "Quanto é 40% de 50?", a: ["15", "20", "25", "30"], c: 1 },
+        { q: "Se X + 5 = 12, qual é o valor de X?", a: ["5", "6", "7", "8"], c: 2 },
+        { q: "Quanto é 11²?", a: ["111", "121", "131", "141"], c: 1 },
+        { q: "Qual a soma dos ângulos internos de um quadrilátero?", a: ["180°", "270°", "360°", "450°"], c: 2 },
+        { q: "Quanto é 6! (fatorial de 6)?", a: ["120", "360", "720", "5040"], c: 2 },
+        { q: "Qual é o MMC de 4 e 6?", a: ["8", "10", "12", "14"], c: 2 }
+      ];
+    }
+
+    // Cinema - 20 perguntas
+    function generateCinemaQuestions() {
+      return [
+        { q: "Quem dirigiu o filme 'Titanic'?", a: ["Steven Spielberg", "James Cameron", "Christopher Nolan", "Quentin Tarantino"], c: 1 },
+        { q: "Qual ator interpreta o Tony Stark (Homem de Ferro)?", a: ["Chris Evans", "Chris Hemsworth", "Robert Downey Jr.", "Mark Ruffalo"], c: 2 },
+        { q: "Qual filme ganhou o Oscar de Melhor Filme em 2020?", a: ["1917", "Joker", "Parasita", "Once Upon a Time in Hollywood"], c: 2 },
+        { q: "Quem é o protagonista de 'Matrix'?", a: ["Morpheus", "Neo", "Trinity", "Smith"], c: 1 },
+        { q: "Qual é o nome do feiticeiro de 'O Senhor dos Anéis'?", a: ["Bilbo", "Frodo", "Gandalf", "Aragorn"], c: 2 },
+        { q: "Que filme tem a famosa frase: 'May the Force be with you'?", a: ["Star Trek", "Star Wars", "Duna", "Indiana Jones"], c: 1 },
+        { q: "Qual atriz interpreta Katniss Everdeen em 'Os Jogos da Fome'?", a: ["Emma Watson", "Jennifer Lawrence", "Scarlett Johansson", "Kristen Stewart"], c: 1 },
+        { q: "Quem dirigiu 'Pulp Fiction'?", a: ["Martin Scorsese", "David Fincher", "Quentin Tarantino", "Francis Ford Coppola"], c: 2 },
+        { q: "Qual é o filme mais premiado da história do Oscar?", a: ["Titanic", "Ben-Hur", "O Senhor dos Anéis: O Retorno do Rei", "La La Land"], c: 2 },
+        { q: "Qual ator interpreta Jack Sparrow?", a: ["Brad Pitt", "Johnny Depp", "Leonardo DiCaprio", "Will Smith"], c: 1 },
+        { q: "Em que filme aparece o personagem 'Hannibal Lecter'?", a: ["Psicopata Americano", "Seven", "O Silêncio dos Inocentes", "Clube de Combate"], c: 2 },
+        { q: "Qual é o filme de animação da Pixar sobre monstros?", a: ["Toy Story", "Monstros S.A.", "Carros", "Up"], c: 1 },
+        { q: "Quem interpreta o Coringa em 'O Cavaleiro das Trevas'?", a: ["Jared Leto", "Jack Nicholson", "Heath Ledger", "Joaquin Phoenix"], c: 2 },
+        { q: "Qual destes filmes é dirigido por Christopher Nolan?", a: ["A Origem", "O Irlandês", "Blade Runner 2049", "1917"], c: 0 },
+        { q: "Qual é o filme com a maior bilheteira de sempre (sem inflação)?", a: ["Avatar", "Vingadores: Endgame", "Titanic", "Star Wars: O Despertar da Força"], c: 0 },
+        { q: "Quem dirigiu 'O Poderoso Chefão'?", a: ["Martin Scorsese", "Francis Ford Coppola", "Brian De Palma", "Sergio Leone"], c: 1 },
+        { q: "Qual ator é conhecido por interpretar Rocky Balboa?", a: ["Arnold Schwarzenegger", "Sylvester Stallone", "Bruce Willis", "Jean-Claude Van Damme"], c: 1 },
+        { q: "Qual filme tem a música 'My Heart Will Go On'?", a: ["Ghost", "Titanic", "Armageddon", "Pearl Harbor"], c: 1 },
+        { q: "Qual atriz ganhou o Oscar por 'La La Land'?", a: ["Emma Stone", "Natalie Portman", "Meryl Streep", "Amy Adams"], c: 0 },
+        { q: "Em que ano estreou o primeiro filme do Harry Potter?", a: ["1999", "2000", "2001", "2002"], c: 2 }
+      ];
+    }
+
+    // Desporto - 20 perguntas
+    function generateSportsQuestions() {
+      return [
+        { q: "Quem ganhou a Copa do Mundo de 2018?", a: ["Alemanha", "Brasil", "França", "Argentina"], c: 2 },
+        { q: "Qual jogador tem mais Bolas de Ouro?", a: ["Cristiano Ronaldo", "Lionel Messi", "Neymar", "Mbappé"], c: 1 },
+        { q: "Qual é o clube com mais Champions League?", a: ["Bayern", "Milan", "Real Madrid", "Liverpool"], c: 2 },
+        { q: "Quem é o maior vencedor de Wimbledon (ténis masculino)?", a: ["Roger Federer", "Novak Djokovic", "Rafael Nadal", "Pete Sampras"], c: 0 },
+        { q: "Qual equipa venceu a NBA em 2023?", a: ["Golden State Warriors", "Miami Heat", "Denver Nuggets", "Boston Celtics"], c: 2 },
+        { q: "Quem é conhecido como 'The King' no basquetebol?", a: ["Kobe Bryant", "Michael Jordan", "LeBron James", "Magic Johnson"], c: 2 },
+        { q: "Qual país venceu o Rugby World Cup de 2019?", a: ["Nova Zelândia", "Inglaterra", "África do Sul", "Austrália"], c: 2 },
+        { q: "Quem detém o recorde mundial dos 100 metros?", a: ["Usain Bolt", "Tyson Gay", "Yohan Blake", "Justin Gatlin"], c: 0 },
+        { q: "Qual clube português venceu a Liga Europa em 2011?", a: ["Benfica", "Sporting", "Porto", "Braga"], c: 2 },
+        { q: "Qual piloto tem mais títulos de Fórmula 1?", a: ["Ayrton Senna", "Michael Schumacher", "Lewis Hamilton", "Sebastian Vettel"], c: 2 },
+        { q: "Qual é o desporto nacional do Canadá no verão?", a: ["Futebol", "Hóquei", "Lacrosse", "Baseball"], c: 2 },
+        { q: "Qual nadador tem mais medalhas olímpicas?", a: ["Mark Spitz", "Michael Phelps", "Ryan Lochte", "Ian Thorpe"], c: 1 },
+        { q: "Qual clube inglês tem mais títulos da Premier League?", a: ["Manchester United", "Liverpool", "Arsenal", "Chelsea"], c: 0 },
+        { q: "Quem venceu o Tour de France 2022?", a: ["Tadej Pogačar", "Jonas Vingegaard", "Geraint Thomas", "Chris Froome"], c: 1 },
+        { q: "Qual jogador é conhecido por 'King Eric' no Manchester United?", a: ["Eric Cantona", "David Beckham", "Ryan Giggs", "Wayne Rooney"], c: 0 },
+        { q: "Qual país venceu o Mundial de Futebol Feminino de 2019?", a: ["Alemanha", "França", "EUA", "Japão"], c: 2 },
+        { q: "Qual lutador de MMA tem mais vitórias no UFC?", a: ["Khabib Nurmagomedov", "Conor McGregor", "Anderson Silva", "Jon Jones"], c: 3 },
+        { q: "Qual é o recorde mundial de salto em altura masculino?", a: ["2,40m", "2,45m", "2,50m", "2,55m"], c: 1 },
+        { q: "Qual equipa venceu a Super Bowl de 2023?", a: ["Philadelphia Eagles", "Kansas City Chiefs", "San Francisco 49ers", "Cincinnati Bengals"], c: 1 },
+        { q: "Quem é o maior artilheiro da história do futebol (gols oficiais)?", a: ["Pelé", "Cristiano Ronaldo", "Lionel Messi", "Romário"], c: 1 }
+      ];
+    }
 
     let state = {
       quiz: null,
@@ -207,17 +363,23 @@
       quizzes.forEach(q => {
         const div = document.createElement("div");
         div.className = "quiz-item";
-        div.innerText = q.title;
+        div.innerHTML = `${q.icon || "📚"} ${q.title}<small>20 perguntas</small>`;
         div.onclick = () => startQuiz(q.id);
         list.appendChild(div);
       });
     };
 
-    function startQuiz(id) {
+    async function startQuiz(id) {
       state.quiz = quizzes.find(q => q.id === id);
       state.index = 0;
       state.points = 0;
       state.corrects = 0;
+      
+      showScreen("loadingScreen");
+      
+      // Simular loading para melhor experiência
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
       document.getElementById("headerScore").style.display = "block";
       showScreen("quizScreen");
       loadQuestion();
@@ -228,7 +390,7 @@
       state.timeLeft = 20;
       const q = state.quiz.questions[state.index];
       
-      document.getElementById("questionCounter").innerText = `PERGUNTA ${state.index + 1} DE ${state.quiz.questions.length}`;
+      document.getElementById("questionCounter").innerHTML = `<strong>❓ PERGUNTA ${state.index + 1} DE ${state.quiz.questions.length}</strong>`;
       document.getElementById("questionText").innerText = q.q;
       
       q.a.forEach((text, i) => {
@@ -252,7 +414,7 @@
         fill.style.width = (state.timeLeft / 20 * 100) + "%";
 
         if (state.timeLeft <= 0) {
-          handleAnswer(-1); // Tempo esgotado
+          handleAnswer(-1);
         }
       }, 1000);
     }
@@ -266,17 +428,16 @@
       const btns = document.querySelectorAll(".answer-btn");
 
       if (choice === correctIndex) {
-        // Cálculo de pontos estilo Kahoot: Base 500 + (Tempo restante * 25)
         const bonus = state.timeLeft * 25;
         state.points += (500 + bonus);
         state.corrects++;
         btns[choice].classList.add("correct");
       } else {
-        if (choice !== -1) btns[choice].classList.add("wrong");
+        if (choice !== -1 && btns[choice]) btns[choice].classList.add("wrong");
         btns[correctIndex].classList.add("correct");
       }
 
-      document.getElementById("livePoints").innerText = state.points;
+      document.getElementById("livePoints").innerText = Math.floor(state.points);
 
       setTimeout(() => {
         state.index++;
@@ -291,12 +452,19 @@
     function showResults() {
       showScreen("resultsScreen");
       document.getElementById("headerScore").style.display = "none";
-      document.getElementById("finalScore").innerText = `${state.points} PTS`;
-      document.getElementById("correctCount").innerText = `${state.corrects} / ${state.quiz.questions.length}`;
-      document.getElementById("avgTime").innerText = (20 - state.timeLeft).toFixed(1);
+      document.getElementById("finalScore").innerHTML = `🏆 ${Math.floor(state.points)} PTS`;
+      document.getElementById("correctCount").innerHTML = `${state.corrects} / ${state.quiz.questions.length}`;
       
-      const p = (state.corrects / state.quiz.questions.length) * 100;
-      document.getElementById("feedbackText").innerText = p >= 70 ? "Incrível! És um mestre!" : "Bom esforço! Tenta novamente.";
+      const percent = (state.corrects / state.quiz.questions.length) * 100;
+      document.getElementById("percentCorrect").innerHTML = percent.toFixed(1);
+      
+      let feedback = "";
+      if (percent >= 80) feedback = "🌟 Espetacular! És um verdadeiro génio!";
+      else if (percent >= 60) feedback = "🎉 Muito bom! Continua assim!";
+      else if (percent >= 40) feedback = "📚 Bom esforço! Estuda mais um pouco e tenta outra vez.";
+      else feedback = "💪 Não desistas! Cada erro é uma lição. Tenta novamente!";
+      
+      document.getElementById("feedbackText").innerHTML = feedback;
     }
 
     function showScreen(id) {
