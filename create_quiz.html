@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KAPOOT - Quizes Divertidos</title>
+
+  <style>
+    :root {
+      --azul: #3492FC;
+      --amarelo: #E8DA31;
+      --branco: #FFFFFF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 30%),
+        radial-gradient(circle at 86% 16%, rgba(232, 218, 49, 0.3) 0%, rgba(232, 218, 49, 0) 26%),
+        radial-gradient(circle at 24% 86%, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 28%),
+        radial-gradient(circle at 78% 80%, rgba(125, 196, 255, 0.2) 0%, rgba(125, 196, 255, 0) 34%),
+        linear-gradient(155deg, #2a76d6 0%, #2f87ea 38%, #3492fc 58%, #2a78d8 100%);
+      color: var(--branco);
+      min-height: 100vh;
+      line-height: 1.5;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(circle at center, black 45%, transparent 92%);
+      opacity: 0.22;
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -15% -10%;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 24%),
+        radial-gradient(circle at 78% 68%, rgba(232, 218, 49, 0.2) 0%, rgba(232, 218, 49, 0) 22%),
+        radial-gradient(circle at 56% 45%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 18%);
+      filter: blur(8px);
+      mix-blend-mode: screen;
+      opacity: 0.55;
+      animation: ambientGlow 16s ease-in-out infinite alternate;
+      z-index: -1;
+    }
+
+    @keyframes ambientGlow {
+      0% {
+        transform: translate3d(-2%, -1%, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(2%, 1.5%, 0) scale(1.04);
+      }
+      100% {
+        transform: translate3d(0.5%, -1.2%, 0) scale(1.02);
+      }
+    }
+
+    .container {
+      width: min(1100px, 92%);
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 1.2rem 0;
+      border-bottom: 1px solid rgba(232, 218, 49, 0.65);
+      backdrop-filter: blur(6px);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      color: var(--branco);
+      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+    }
+
+    .logo span {
+      color: var(--amarelo);
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--branco);
+      text-decoration: none;
+      border: 2px solid transparent;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      transition: 0.25s ease;
+    }
+
+    .nav-links a:hover {
+      border-color: var(--amarelo);
+      color: var(--amarelo);
+      background-color: rgba(255, 255, 255, 0.07);
+    }
+
+    .hero {
+      padding: 4.5rem 0 2.3rem;
+      text-align: center;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      margin-bottom: 1rem;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid rgba(232, 218, 49, 0.85);
+      border-radius: 999px;
+      background-color: rgba(255, 255, 255, 0.09);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: 1rem;
+      line-height: 1.15;
+      text-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.9rem 1.35rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      border: 2px solid var(--amarelo);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.25s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--amarelo);
+      color: #1b1b1b;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--branco);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      opacity: 0.98;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+    }
+
+    .stats {
+      margin: 0 auto 1.1rem;
+      width: min(760px, 100%);
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 0.8rem;
+    }
+
+    .stat {
+      padding: 0.85rem 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(3px);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.1rem;
+      color: var(--amarelo);
+    }
+
+    .stat span {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .features {
+      position: relative;
+      height: 205px;
+      margin: 2rem 0 4rem;
+      overflow: hidden;
+      background-color: transparent;
+      width: 100vw;
+      left: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+    }
+
+    .card {
+      --delay: 0s;
+      --duration: 14s;
+      --jump: 22px;
+
+      position: absolute;
+      top: 46px;
+      left: -320px;
+      width: 270px;
+      border: 1px solid rgba(232, 218, 49, 0.95);
+      border-radius: 16px;
+      padding: 1.2rem;
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+      backdrop-filter: blur(4px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+      animation: cardRunJump var(--duration) linear infinite;
+      animation-delay: var(--delay);
+    }
+
+    .card h3 {
+      margin-bottom: 0.6rem;
+      color: var(--amarelo);
+    }
+
+    .card:nth-child(1) { --delay: 0s; --duration: 14s; --jump: 22px; }
+    .card:nth-child(2) { --delay: 3.5s; --duration: 14s; --jump: 22px; }
+    .card:nth-child(3) { --delay: 7s; --duration: 14s; --jump: 22px; }
+    .card:nth-child(4) { --delay: 10.5s; --duration: 14s; --jump: 22px; }
+
+    @keyframes cardRunJump {
+      0% {
+        transform: translateX(0) translateY(0);
+      }
+      12.5% {
+        transform: translateX(16vw) translateY(calc(var(--jump) * -1));
+      }
+      25% {
+        transform: translateX(32vw) translateY(0);
+      }
+      37.5% {
+        transform: translateX(48vw) translateY(calc(var(--jump) * -1));
+      }
+      50% {
+        transform: translateX(64vw) translateY(0);
+      }
+      62.5% {
+        transform: translateX(80vw) translateY(calc(var(--jump) * -1));
+      }
+      75% {
+        transform: translateX(96vw) translateY(0);
+      }
+      87.5% {
+        transform: translateX(112vw) translateY(calc(var(--jump) * -1));
+      }
+      100% {
+        transform: translateX(calc(128vw + 360px)) translateY(0);
+      }
+    }
+
+    footer {
+      border-top: 1px solid rgba(232, 218, 49, 0.65);
+      padding: 1rem 0;
+      text-align: center;
+      font-size: 0.95rem;
+      opacity: 0.95;
+    }
+
+    @media (max-width: 780px) {
+      .stats {
+        grid-template-columns: 1fr;
+        max-width: 330px;
+      }
+
+      .features {
+        height: 235px;
+      }
+
+      .card {
+        width: 240px;
+      }
+    }
+
+    /* Wrapper for spacing */
+    .form-group {
+      margin-bottom: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    /* Labels */
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Inputs, textarea, select */
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.75rem 0.9rem;
+      border-radius: 10px;
+      border: 1px solid rgba(232, 218, 49, 0.6);
+      background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.12),
+        rgba(255, 255, 255, 0.05)
+      );
+      backdrop-filter: blur(4px);
+      color: var(--branco);
+      font-size: 0.95rem;
+      outline: none;
+      transition: 0.25s ease;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+    }
+
+    /* Placeholder */
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* Focus state */
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--amarelo);
+      box-shadow: 0 0 0 2px rgba(232, 218, 49, 0.25),
+                  0 10px 22px rgba(0, 0, 0, 0.25);
+      background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.18),
+        rgba(255, 255, 255, 0.08)
+      );
+    }
+
+    /* Hover */
+    input:hover,
+    textarea:hover,
+    select:hover {
+      border-color: var(--amarelo);
+    }
+
+    /* Textarea tweak */
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    /* Error state (important for real UX) */
+    .input-error {
+      border-color: #ff5c5c;
+      box-shadow: 0 0 0 2px rgba(255, 92, 92, 0.25);
+    }
+
+    /* Success state */
+    .input-success {
+      border-color: #4cd964;
+      box-shadow: 0 0 0 2px rgba(76, 217, 100, 0.25);
+    }
+
+    /* Optional: form container glass card */
+    .form-box {
+      padding: 1.5rem;
+      border-radius: 16px;
+      background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.12),
+        rgba(255, 255, 255, 0.06)
+      );
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    }
+
+    /* GRID for answers */
+    .answers-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    /* Each answer block */
+    .answer-card {
+      display: grid;
+      grid-template-columns: auto 1fr; /* radio tiny, input takes rest */
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(3px);
+      transition: 0.2s ease;
+    }
+
+    .answer-card:hover {
+      border-color: var(--amarelo);
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* radio button tweak */
+    .answer-card input[type="radio"] {
+      accent-color: var(--amarelo);
+      transform: scale(0.85); /* smaller but still usable */
+      margin: 0;
+    }
+
+    /* input inside card */
+    .answer-card input[type="text"] {
+      width: 100%;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      padding: 0.4rem;
+    }
+
+    main {
+      padding: 2.5rem 0 3rem;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    @media (max-width: 780px) {
+      main {
+        padding: 2rem 0 2.5rem;
+      }
+    }
+
+    .main-hidden {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .main-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  
+    /* ═══ HEADER UNIFICADO (KAPOOT) ═══ */
+    .kapoot-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 6%;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(20px) saturate(1.4);
+      background: rgba(10,63,168,0.25);
+      width: 100%;
+    }
+
+    .kapoot-logo {
+      font-family: 'Syne', 'Poppins', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      text-decoration: none;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      color: #fff;
+    }
+    .kapoot-logo .ka   { color: #ffffff; }
+    .kapoot-logo .poot { color: #ffd54a; }
+    .kapoot-logo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffd54a;
+      margin-left: 3px;
+      margin-bottom: 14px;
+      animation: kapoot-blink 2s ease-in-out infinite;
+    }
+    @keyframes kapoot-blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .kapoot-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .kapoot-nav a {
+      color: rgba(255,255,255,0.80);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.92rem;
+      padding: 8px 16px;
+      border-radius: 999px;
+      transition: all 0.25s ease;
+      border: none;
+    }
+    .kapoot-nav a:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.10);
+    }
+    .kapoot-nav a.active {
+      color: #1f2430;
+      background: #ffd54a;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(255,213,74,0.30);
+    }
+
+    /* Toast partilhado */
+    #kapoot-toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(8,20,55,0.95);
+      color: #fff;
+      padding: 0.75rem 1.6rem;
+      border-radius: 14px;
+      border: 1px solid rgba(232,218,49,0.45);
+      font-size: 0.95rem;
+      font-weight: 600;
+      z-index: 9999;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #kapoot-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 640px) {
+      .kapoot-header { padding: 0 5%; height: auto; padding: 14px 5%; flex-wrap: wrap; }
+      .kapoot-nav a  { padding: 6px 10px; font-size: 0.84rem; }
+      .kapoot-logo   { font-size: 1.55rem; }
+    }
+    /* ═══ FIM HEADER UNIFICADO ═══ */
+
+  </style>
+</head>
+
+<body>
+  <div id="kapoot-toast" role="status" aria-live="polite"></div>
+  <header class="kapoot-header">
+    <a class="kapoot-logo" href="index.html" aria-label="KAPOOT - Página inicial">
+      <span class="ka">KA</span><span class="poot">POOT</span>
+      <span class="kapoot-logo-dot"></span>
+    </a>
+    <nav class="kapoot-nav" aria-label="Navegação principal">
+      <a href="index.html"       id="kpt-nav-inicio">Início</a>
+      <a href="ranking.html"     id="kpt-nav-ranking">Ranking</a>
+      <a href="quiz.html"        id="kpt-nav-quiz">Jogar</a>
+      <a href="create_quiz.html" id="kpt-nav-criar">Criar Quiz</a>
+      <a href="profile.html"     id="kpt-nav-perfil" style="display:none">Perfil</a>
+      <a href="login.html"       id="kpt-nav-auth">Entrar</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Criar quizes</h1>
+      <p>
+        Cria já o teu próprio quiz!<br>Mete as perguntas que quiseres com as respostas que quiseres!
+      </p>
+      <a class="btn btn-primary" id="startQuizBtn" href="#">Criar Quiz</a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">© 2026 KAPOOT - Todos os direitos reservados.</div>
+  </footer>
+
+<script>
+  const btn = document.getElementById("startQuizBtn");
+  const main = document.querySelector("main");
+
+  let questions = [];
+  let currentIndex = 0;
+
+  btn.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    // Fade out
+    main.classList.add("main-hidden");
+
+    setTimeout(() => {
+      questions = [createEmptyQuestion()];
+      currentIndex = 0;
+
+      render();
+
+      // Fade in
+      main.classList.remove("main-hidden");
+      main.classList.add("main-visible");
+    }, 300); // match CSS duration
+  });
+
+  function createEmptyQuestion() {
+    return {
+      question: "",
+      answers: ["", "", "", ""],
+      correct: null
+    };
+  }
+
+  function render() {
+    const q = questions[currentIndex];
+
+    main.innerHTML = `
+      <section class="form-box">
+        <h2>Pergunta ${currentIndex + 1}</h2>
+
+        <div class="form-group">
+          <input type="text" id="question" value="${q.question}" placeholder="Escreve a pergunta..." />
+        </div>
+
+        <div class="answers-grid">
+          ${q.answers.map((ans, i) => `
+            <div class="answer-card">
+              <input type="radio" name="correct" value="${i}" ${q.correct == i ? "checked" : ""}/>
+              <input type="text" class="answer" data-index="${i}" value="${ans}" placeholder="Resposta ${i+1}" />
+            </div>
+          `).join("")}
+        </div>
+
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:1rem;">
+          <button class="btn btn-secondary" id="prevBtn">⬅ Anterior</button>
+          <button class="btn btn-secondary" id="nextBtn">Seguinte ➡</button>
+          <button class="btn btn-primary" id="addBtn">+ Nova Pergunta</button>
+          <button class="btn btn-primary" id="finishBtn">Finalizar Quiz</button>
+        </div>
+      </section>
+    `;
+
+    attachEvents();
+  }
+
+  function attachEvents() {
+    const qInput = document.getElementById("question");
+    const answerInputs = document.querySelectorAll(".answer");
+    const radios = document.querySelectorAll("input[name='correct']");
+
+    // Save question text
+    qInput.addEventListener("input", () => {
+      questions[currentIndex].question = qInput.value;
+    });
+
+    // Save answers
+    answerInputs.forEach(input => {
+      input.addEventListener("input", () => {
+        const i = input.dataset.index;
+        questions[currentIndex].answers[i] = input.value;
+      });
+    });
+
+    // Save correct answer
+    radios.forEach(r => {
+      r.addEventListener("change", () => {
+        questions[currentIndex].correct = r.value;
+      });
+    });
+
+    // Navigation
+    document.getElementById("prevBtn").onclick = () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        render();
+      }
+    };
+
+    document.getElementById("nextBtn").onclick = () => {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        render();
+      }
+    };
+
+    // Add new question
+    document.getElementById("addBtn").onclick = () => {
+      questions.push(createEmptyQuestion());
+      currentIndex = questions.length - 1;
+      render();
+    };
+
+    // Finish quiz
+    document.getElementById("finishBtn").onclick = () => {
+      console.log("QUIZ FINAL:", questions);
+      alert("Quiz criado (vê a console para o array do quiz todo)");
+    };
+  }
+</script>
+
+  <script src="kapoot-header.js"></script>
+
+  <script>
+    /* KAPOOT DB INTEGRATION — create_quiz.html */
+    (function () {
+      if (!Kapoot.isLoggedIn()) {
+        kapootToast('Precisas de iniciar sessão para criar quizzes! 🔐');
+        setTimeout(function () {
+          window.location.href = 'login.html';
+        }, 1500);
+        return;
+      }
+
+      /* Quando o utilizador clicar "Finalizar Quiz", envia para BD
+         em vez de apenas mostrar alert. Usa observer porque o botão
+         é criado dinamicamente pelo script original. */
+      document.addEventListener('click', function (ev) {
+        const target = ev.target;
+        if (!target || target.id !== 'finishBtn') return;
+
+        /* Dá ao código original a chance de executar (pequeno delay) */
+        setTimeout(function () {
+          if (typeof questions === 'undefined' || !questions.length) return;
+
+          /* Pede título do quiz */
+          const titulo = prompt('Dá um título ao teu quiz:', 'Novo Quiz');
+          if (!titulo || !titulo.trim()) {
+            kapootToast('❌ O quiz precisa de um título!');
+            return;
+          }
+
+          /* Converte a estrutura do teu script para a da API */
+          const perguntas = questions.map(function (q) {
+            return {
+              pergunta:  q.question || '',
+              respostas: q.answers  || [],
+              correta:   q.correct !== null ? parseInt(q.correct) : -1,
+              tempo:     20
+            };
+          });
+
+          /* Valida */
+          for (let i = 0; i < perguntas.length; i++) {
+            if (!perguntas[i].pergunta.trim()) {
+              kapootToast('❌ Pergunta ' + (i+1) + ' está vazia!');
+              return;
+            }
+            if (perguntas[i].correta < 0) {
+              kapootToast('❌ Pergunta ' + (i+1) + ' não tem resposta correta!');
+              return;
+            }
+          }
+
+          fetch('api/criar_quiz.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              titulo:       titulo.trim(),
+              descricao:    '',
+              visibilidade: 'publico',
+              perguntas:    perguntas
+            })
+          })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (d.ok) {
+              kapootToast('✅ Quiz guardado na BD! ID: ' + d.kahoot_id);
+              setTimeout(function () {
+                window.location.href = 'index.html';
+              }, 2000);
+            } else {
+              kapootToast('❌ ' + (d.erro || 'Erro ao guardar.'));
+            }
+          })
+          .catch(function () {
+            kapootToast('❌ Erro de ligação com a BD.');
+          });
+        }, 100);
+      });
+    })();
+  </script>
+
+</body>
+</html>

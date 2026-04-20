@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Podium Scoreboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e3a8a',
+                            900: '#1e2d6d',
+                            950: '#0f1a45',
+                        },
+                        accent: {
+                            300: '#fde047',
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Dot pattern background */
+        body {
+            background-color: #1e3a8a;
+            background-image: radial-gradient(circle, #2d4fb8 1.2px, transparent 1.2px);
+            background-size: 28px 28px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Podium rise animation */
+        @keyframes podiumRise {
+            0% {
+                opacity: 0;
+                transform: translateY(80px) scale(0.9);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(-8px) scale(1.02);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Fade in from below */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Crown bounce */
+        @keyframes crownBounce {
+            0%, 100% {
+                transform: translateY(0) rotate(-3deg);
+            }
+            50% {
+                transform: translateY(-6px) rotate(3deg);
+            }
+        }
+
+        /* Glow pulse for 1st place */
+        @keyframes glowPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(250, 204, 21, 0.4), 0 0 60px rgba(250, 204, 21, 0.15);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(250, 204, 21, 0.6), 0 0 80px rgba(250, 204, 21, 0.25);
+            }
+            }
+        
+
+        /* Sparkle */
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+        }
+
+        /* Score count animation */
+        @keyframes scoreCount {
+            0% { opacity: 0; transform: scale(0.5); }
+            60% { transform: scale(1.15); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Slide in from sides */
+        @keyframes slideInLeft {
+            0% { opacity: 0; transform: translateX(-60px) translateY(40px); }
+            100% { opacity: 1; transform: translateX(0) translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            0% { opacity: 0; transform: translateX(60px) translateY(40px); }
+            100% { opacity: 1; transform: translateX(0) translateY(0); }
+        }
+
+        @keyframes slideInCenter {
+            0% { opacity: 0; transform: translateY(60px) scale(0.95); }
+            60% { transform: translateY(-5px) scale(1.02); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .podium-1st {
+            animation: slideInCenter 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+        }
+
+        .podium-2nd {
+            animation: slideInLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
+        }
+
+        .podium-3rd {
+            animation: slideInRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s both;
+        }
+
+        .rank-card {
+            animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .rank-card:nth-child(1) { animation-delay: 1.2s; }
+        .rank-card:nth-child(2) { animation-delay: 1.4s; }
+        .rank-card:nth-child(3) { animation-delay: 1.6s; }
+
+        .crown-icon {
+            animation: crownBounce 2s ease-in-out infinite;
+        }
+
+        .glow-ring {
+            animation: glowPulse 2.5s ease-in-out infinite;
+        }
+
+        .sparkle-1 {
+            animation: sparkle 2s ease-in-out infinite 0s;
+        }
+        .sparkle-2 {
+            animation: sparkle 2s ease-in-out infinite 0.5s;
+        }
+        .sparkle-3 {
+            animation: sparkle 2s ease-in-out infinite 1s;
+        }
+        .sparkle-4 {
+            animation: sparkle 2s ease-in-out infinite 1.5s;
+        }
+
+        .score-animate {
+            animation: scoreCount 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+        }
+
+        /* Trophy shine */
+        @keyframes trophyShine {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .trophy-shine {
+            background: linear-gradient(90deg, #facc15 0%, #fde047 25%, #ffffff 50%, #fde047 75%, #facc15 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: trophyShine 3s linear infinite;
+        }
+
+        /* Confetti particle */
+        @keyframes confettiFall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* Avatar ring gradient */
+        .avatar-ring-gold {
+            background: conic-gradient(from 0deg, #facc15, #fde047, #f59e0b, #facc15);
+            padding: 3px;
+        }
+
+        .avatar-ring-silver {
+            background: conic-gradient(from 0deg, #94a3b8, #cbd5e1, #64748b, #94a3b8);
+            padding: 3px;
+        }
+
+        .avatar-ring-bronze {
+            background: conic-gradient(from 0deg, #d97706, #f59e0b, #b45309, #d97706);
+            padding: 3px;
+        }
+
+        .podium-bar {
+            transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+    
+    /* ═══ HEADER UNIFICADO (KAPOOT) ═══ */
+    .kapoot-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 6%;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(20px) saturate(1.4);
+      background: rgba(10,63,168,0.25);
+      width: 100%;
+    }
+
+    .kapoot-logo {
+      font-family: 'Syne', 'Poppins', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      text-decoration: none;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      color: #fff;
+    }
+    .kapoot-logo .ka   { color: #ffffff; }
+    .kapoot-logo .poot { color: #ffd54a; }
+    .kapoot-logo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffd54a;
+      margin-left: 3px;
+      margin-bottom: 14px;
+      animation: kapoot-blink 2s ease-in-out infinite;
+    }
+    @keyframes kapoot-blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .kapoot-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .kapoot-nav a {
+      color: rgba(255,255,255,0.80);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.92rem;
+      padding: 8px 16px;
+      border-radius: 999px;
+      transition: all 0.25s ease;
+      border: none;
+    }
+    .kapoot-nav a:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.10);
+    }
+    .kapoot-nav a.active {
+      color: #1f2430;
+      background: #ffd54a;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(255,213,74,0.30);
+    }
+
+    /* Toast partilhado */
+    #kapoot-toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(8,20,55,0.95);
+      color: #fff;
+      padding: 0.75rem 1.6rem;
+      border-radius: 14px;
+      border: 1px solid rgba(232,218,49,0.45);
+      font-size: 0.95rem;
+      font-weight: 600;
+      z-index: 9999;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #kapoot-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 640px) {
+      .kapoot-header { padding: 0 5%; height: auto; padding: 14px 5%; flex-wrap: wrap; }
+      .kapoot-nav a  { padding: 6px 10px; font-size: 0.84rem; }
+      .kapoot-logo   { font-size: 1.55rem; }
+    }
+    /* ═══ FIM HEADER UNIFICADO ═══ */
+
+  </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+
+    <!-- Confetti container -->
+    <div id="confetti-container"></div>
+
+    <!-- Header -->
+    <header class="kapoot-header">
+    <a class="kapoot-logo" href="index.html" aria-label="KAPOOT - Página inicial">
+      <span class="ka">KA</span><span class="poot">POOT</span>
+      <span class="kapoot-logo-dot"></span>
+    </a>
+    <nav class="kapoot-nav" aria-label="Navegação principal">
+      <a href="index.html"       id="kpt-nav-inicio">Início</a>
+      <a href="ranking.html"     id="kpt-nav-ranking">Ranking</a>
+      <a href="quiz.html"        id="kpt-nav-quiz">Jogar</a>
+      <a href="create_quiz.html" id="kpt-nav-criar">Criar Quiz</a>
+      <a href="profile.html"     id="kpt-nav-perfil" style="display:none">Perfil</a>
+      <a href="login.html"       id="kpt-nav-auth">Entrar</a>
+    </nav>
+  </header>
+
+    <!-- Podium Section -->
+    <section class="relative z-10 px-4 pt-8 pb-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-end justify-center gap-3 md:gap-6 lg:gap-8" style="min-height: 380px;">
+
+                <!-- 2nd Place -->
+                <div class="podium-2nd flex flex-col items-center w-1/3 max-w-[200px]">
+                    <!-- Player Info -->
+                    <div class="flex flex-col items-center mb-3">
+                        <!-- Position badge -->
+                        <div class="relative mb-2">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 text-gray-800 font-bold text-sm shadow-lg">2</span>
+                        </div>
+                        <!-- Avatar -->
+                        <div class="avatar-ring-silver rounded-full mb-2 glow-ring" style="animation-delay: 0.5s;">
+                            <img src="http://static.photos/people/200x200/42" alt="Player 2" class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-primary-900">
+                        </div>
+                        <!-- Name -->
+                        <h3 class="text-white font-bold text-sm md:text-base text-center leading-tight">Carolina M.</h3>
+                        <!-- Score -->
+                        <div class="mt-1 bg-white/10 backdrop-blur-sm rounded-full px-3 py-0.5 border border-white/10">
+                            <span class="text-accent-300 font-bold text-xs md:text-sm">8,450 pts</span>
+                        </div>
+                    </div>
+                    <!-- Podium bar -->
+                    <div class="w-full rounded-t-xl bg-gradient-to-t from-primary-800 to-primary-600 relative overflow-hidden podium-bar" style="height: 120px;">
+                        <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent"></div>
+                        <div class="absolute bottom-3 left-0 right-0 text-center">
+                            <i data-lucide="medal" class="w-6 h-6 text-gray-300 mx-auto"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1st Place -->
+                <div class="podium-1st flex flex-col items-center w-1/3 max-w-[240px]">
+                    <!-- Player Info -->
+                    <div class="flex flex-col items-center mb-3">
+                        <!-- Crown -->
+                        <div class="crown-icon mb-1 relative">
+                            <i data-lucide="crown" class="w-8 h-8 md:w-10 md:h-10 text-accent-400 drop-shadow-lg"></i>
+                            <!-- Sparkles around crown -->
+                            <div class="sparkle-1 absolute -top-1 -left-2 w-2 h-2 bg-accent-300 rounded-full"></div>
+                            <div class="sparkle-2 absolute -top-2 right-0 w-1.5 h-1.5 bg-white rounded-full"></div>
+                            <div class="sparkle-3 absolute top-0 -right-3 w-2 h-2 bg-accent-300 rounded-full"></div>
+                        </div>
+                        <!-- Position badge -->
+                        <div class="relative mb-2">
+                            <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-accent-300 to-accent-500 text-primary-950 font-black text-base shadow-lg shadow-accent-400/30">1</span>
+                        </div>
+                        <!-- Avatar with glow -->
+                        <div class="avatar-ring-gold rounded-full mb-2 glow-ring">
+                            <img src="http://static.photos/people/200x200/7" alt="Player 1" class="w-20 h-20 md:w-28 md:h-28 rounded-full object-cover border-2 border-primary-950">
+                        </div>
+                        <!-- Name -->
+                        <h3 class="text-white font-extrabold text-base md:text-lg text-center leading-tight">Rafael S.</h3>
+                        <!-- Score -->
+                        <div class="mt-1 bg-accent-400/20 backdrop-blur-sm rounded-full px-4 py-1 border border-accent-400/30">
+                            <span class="text-accent-300 font-extrabold text-sm md:text-base">12,780 pts</span>
+                        </div>
+                    </div>
+                    <!-- Podium bar -->
+                    <div class="w-full rounded-t-xl bg-gradient-to-t from-accent-500 to-accent-400 relative overflow-hidden podium-bar" style="height: 170px;">
+                        <div class="absolute inset-0 bg-gradient-to-b from-white/15 to-transparent"></div>
+                        <div class="absolute bottom-3 left-0 right-0 text-center">
+                            <i data-lucide="trophy" class="w-8 h-8 text-primary-950 mx-auto"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3rd Place -->
+                <div class="podium-3rd flex flex-col items-center w-1/3 max-w-[200px]">
+                    <!-- Player Info -->
+                    <div class="flex flex-col items-center mb-3">
+                        <!-- Position badge -->
+                        <div class="relative mb-2">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-amber-600 to-amber-400 text-white font-bold text-sm shadow-lg">3</span>
+                        </div>
+                        <!-- Avatar -->
+                        <div class="avatar-ring-bronze rounded-full mb-2">
+                            <img src="http://static.photos/people/200x200/88" alt="Player 3" class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-primary-900">
+                        </div>
+                        <!-- Name -->
+                        <h3 class="text-white font-bold text-sm md:text-base text-center leading-tight">Lucas T.</h3>
+                        <!-- Score -->
+                        <div class="mt-1 bg-white/10 backdrop-blur-sm rounded-full px-3 py-0.5 border border-white/10">
+                            <span class="text-accent-300 font-bold text-xs md:text-sm">7,200 pts</span>
+                        </div>
+                    </div>
+                    <!-- Podium bar -->
+                    <div class="w-full rounded-t-xl bg-gradient-to-t from-primary-800 to-primary-600 relative overflow-hidden podium-bar" style="height: 100px;">
+                        <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent"></div>
+                        <div class="absolute bottom-3 left-0 right-0 text-center">
+                            <i data-lucide="award" class="w-6 h-6 text-amber-400 mx-auto"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="max-w-4xl mx-auto px-8 py-4">
+        <div class="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+    </div>
+
+    <!-- Ranking List Section -->
+    <section class="relative z-10 px-4 pb-12">
+        <div class="max-w-4xl mx-auto">
+            <!-- Section header -->
+            <div class="flex items-center justify-center gap-2 mb-6">
+                <i data-lucide="list-ordered" class="w-5 h-5 text-primary-300"></i>
+                <h2 class="text-white font-bold text-lg md:text-xl">Next Rankings</h2>
+            </div>
+
+            <!-- Ranking cards -->
+            <div class="flex flex-col gap-3">
+
+                <!-- 4th Place -->
+                <div class="rank-card group">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 px-4 py-3 md:px-6 md:py-4 flex items-center gap-4 hover:bg-white/15 hover:border-white/20 transition-all duration-300 shadow-lg shadow-black/10">
+                        <!-- Position -->
+                        <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-primary-700/50 border border-primary-500/30 flex items-center justify-center">
+                            <span class="text-primary-200 font-bold text-lg">4</span>
+                        </div>
+                        <!-- Avatar -->
+                        <div class="flex-shrink-0">
+                            <img src="http://static.photos/people/200x200/23" alt="Player 4" class="w-11 h-11 rounded-full object-cover border-2 border-white/20">
+                        </div>
+                        <!-- Name & subtitle -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-white font-semibold text-sm md:text-base truncate">Mariana L.</h4>
+                            <p class="text-primary-300/70 text-xs">Answered 18/20</p>
+                        </div>
+                        <!-- Score -->
+                        <div class="flex-shrink-0 flex items-center gap-1.5">
+                            <i data-lucide="star" class="w-4 h-4 text-accent-400 fill-accent-400"></i>
+                            <span class="text-white font-bold text-sm md:text-base">6,850</span>
+                            <span class="text-primary-300/60 text-xs hidden sm:inline">pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5th Place -->
+                <div class="rank-card group">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 px-4 py-3 md:px-6 md:py-4 flex items-center gap-4 hover:bg-white/15 hover:border-white/20 transition-all duration-300 shadow-lg shadow-black/10">
+                        <!-- Position -->
+                        <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-primary-700/50 border border-primary-500/30 flex items-center justify-center">
+                            <span class="text-primary-200 font-bold text-lg">5</span>
+                        </div>
+                        <!-- Avatar -->
+                        <div class="flex-shrink-0">
+                            <img src="http://static.photos/people/200x200/55" alt="Player 5" class="w-11 h-11 rounded-full object-cover border-2 border-white/20">
+                        </div>
+                        <!-- Name & subtitle -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-white font-semibold text-sm md:text-base truncate">Pedro H.</h4>
+                            <p class="text-primary-300/70 text-xs">Answered 16/20</p>
+                        </div>
+                        <!-- Score -->
+                        <div class="flex-shrink-0 flex items-center gap-1.5">
+                            <i data-lucide="star" class="w-4 h-4 text-accent-400 fill-accent-400"></i>
+                            <span class="text-white font-bold text-sm md:text-base">5,920</span>
+                            <span class="text-primary-300/60 text-xs hidden sm:inline">pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6th Place -->
+                <div class="rank-card group">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 px-4 py-3 md:px-6 md:py-4 flex items-center gap-4 hover:bg-white/15 hover:border-white/20 transition-all duration-300 shadow-lg shadow-black/10">
+                        <!-- Position -->
+                        <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-primary-700/50 border border-primary-500/30 flex items-center justify-center">
+                            <span class="text-primary-200 font-bold text-lg">6</span>
+                        </div>
+                        <!-- Avatar -->
+                        <div class="flex-shrink-0">
+                            <img src="http://static.photos/people/200x200/71" alt="Player 6" class="w-11 h-11 rounded-full object-cover border-2 border-white/20">
+                        </div>
+                        <!-- Name & subtitle -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-white font-semibold text-sm md:text-base truncate">Ana J.</h4>
+                            <p class="text-primary-300/70 text-xs">Answered 15/20</p>
+                        </div>
+                        <!-- Score -->
+                        <div class="flex-shrink-0 flex items-center gap-1.5">
+                            <i data-lucide="star" class="w-4 h-4 text-accent-400 fill-accent-400"></i>
+                            <span class="text-white font-bold text-sm md:text-base">5,340</span>
+                            <span class="text-primary-300/60 text-xs hidden sm:inline">pts</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8">
+                <button onclick="backToMenu()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-accent-400 hover:bg-accent-300 text-primary-950 font-bold px-6 py-3 rounded-xl shadow-lg shadow-accent-400/25 hover:shadow-accent-400/40 transition-all duration-300 active:scale-95">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                    Voltar ao Menu
+                </button>
+                <button onclick="shareResults()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold px-6 py-3 rounded-xl border border-white/20 backdrop-blur-sm transition-all duration-300 active:scale-95">
+                    <i data-lucide="share-2" class="w-5 h-5"></i>
+                    Share Results
+                </button>
+                <button onclick="newQuiz()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-white font-bold px-6 py-3 rounded-xl border border-primary-400/30 shadow-lg shadow-primary-900/30 transition-all duration-300 active:scale-95">
+                    <i data-lucide="play-circle" class="w-5 h-5"></i>
+                    New Quiz
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-primary-800/95 backdrop-blur-md text-white px-5 py-3 rounded-xl border border-white/10 shadow-2xl flex items-center gap-3 transition-all duration-500 opacity-0 translate-y-4 pointer-events-none">
+        <i data-lucide="check-circle" class="w-5 h-5 text-accent-400"></i>
+        <span id="toast-msg" class="font-medium text-sm">Action completed!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="relative z-10 pb-6 pt-2 text-center">
+        <p class="text-primary-400/50 text-xs">Quiz Podium Scoreboard • Group Quiz Experience</p>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Confetti effect on load
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#facc15', '#fde047', '#3b82f6', '#60a5fa', '#ffffff', '#f59e0b', '#93c5fd'];
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = (Math.random() * 8 + 4) + 'px';
+                confetti.style.height = (Math.random() * 8 + 4) + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                confetti.style.animationDelay = (Math.random() * 2) + 's';
+                container.appendChild(confetti);
+
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 6000);
+            }
+        }
+
+        // Launch confetti after a short delay
+        setTimeout(createConfetti, 500);
+
+        // Show toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 2500);
+        }
+
+        // Back to menu
+        function backToMenu() {
+            window.location.href = 'index.html';
+        }
+
+        // Share results
+        function shareResults() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Quiz Podium Results 🏆',
+                    text: 'Check out the final leaderboard! 1st: Rafael S. with 12,780 pts!',
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                // Fallback: copy to clipboard
+                const text = '🏆 Quiz Results 🏆\n1st: Rafael S. - 12,780 pts\n2nd: Carolina M. - 8,450 pts\n3rd: Lucas T. - 7,200 pts';
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Results copied to clipboard! 📋');
+                }).catch(() => {
+                    showToast('Share not available in this browser');
+                });
+            }
+        }
+
+        // New quiz
+        function newQuiz() {
+            showToast('Starting a new quiz... 🚀');
+        }
+
+        // Intersection observer for rank cards
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.rank-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+  <script src="kapoot-header.js"></script>
+
+  <script>
+    /* KAPOOT DB INTEGRATION — ranking.html */
+    (function () {
+      function initRanking() {
+        fetch('api/ranking.php?top=10')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (dados) {
+            if (!dados || !dados.length) return;
+
+            /* Atualiza os top 3 do podium */
+            const podiumPlayers = document.querySelectorAll('.podium-1st, .podium-2nd, .podium-3rd');
+            const mapping = [
+              { sel: '.podium-1st', idx: 0 },
+              { sel: '.podium-2nd', idx: 1 },
+              { sel: '.podium-3rd', idx: 2 }
+            ];
+
+            mapping.forEach(function (m) {
+              const el = document.querySelector(m.sel);
+              const p  = dados[m.idx];
+              if (!el || !p) return;
+              const nomeEl  = el.querySelector('h3');
+              const scoreEl = el.querySelector('span.text-accent-300, .podium-score, [class*="accent"]');
+              const avatar  = el.querySelector('img');
+              if (nomeEl)  nomeEl.textContent  = p.nome;
+              if (avatar)  avatar.src          = p.avatar;
+              /* Atualiza score */
+              const scoreSpans = el.querySelectorAll('span');
+              scoreSpans.forEach(function (s) {
+                if (s.textContent.indexOf('pts') !== -1) {
+                  s.textContent = p.pontos.toLocaleString('pt-PT') + ' pts';
+                }
+              });
+            });
+
+            /* Atualiza a lista 4-10 (rank-card) */
+            const rankCards = document.querySelectorAll('.rank-card');
+            for (let i = 0; i < rankCards.length; i++) {
+              const p = dados[3 + i];
+              if (!p) break;
+              const card = rankCards[i];
+              const posEl   = card.querySelector('.w-10 span, [class*="font-bold"]');
+              const nomeEl  = card.querySelector('h4');
+              const avatar  = card.querySelector('img');
+              const scoreEl = card.querySelector('.text-white.font-bold, [class*="font-bold"]:not(.rank-pos)');
+              if (posEl  && posEl.textContent.match(/^\d+$/)) posEl.textContent = p.pos;
+              if (nomeEl) nomeEl.textContent = p.nome;
+              if (avatar) avatar.src         = p.avatar;
+              /* Score: procurar span com número */
+              card.querySelectorAll('span').forEach(function (s) {
+                if (/^[\d,\.]+$/.test(s.textContent.trim())) {
+                  s.textContent = p.pontos.toLocaleString('pt-PT');
+                }
+              });
+            }
+          })
+          .catch(function () { /* mantém dados estáticos do HTML */ });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initRanking);
+      } else {
+        initRanking();
+      }
+    })();
+  </script>
+
+</body>
+</html>

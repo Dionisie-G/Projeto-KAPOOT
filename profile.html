@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil — KAPOOT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --accent:      #ffd54a;
+      --accent-glow: rgba(255,213,74,0.35);
+      --blue-deep:   #0a3fa8;
+      --blue-mid:    #0a78ff;
+      --blue-light:  #43b8ff;
+      --white:       #ffffff;
+      --soft:        rgba(255,255,255,0.75);
+      --glass:       rgba(255,255,255,0.10);
+      --glass-b:     rgba(255,255,255,0.18);
+      --shadow-gold: 0 8px 32px rgba(255,213,74,0.25);
+      --shadow-deep: 0 24px 60px rgba(0,0,0,0.30);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 10% 0%,   rgba(255,255,255,0.13) 0%, transparent 40%),
+        radial-gradient(ellipse at 90% 100%,  rgba(255,213,74,0.18) 0%, transparent 35%),
+        radial-gradient(ellipse at 80% 10%,   rgba(67,184,255,0.15) 0%, transparent 30%),
+        linear-gradient(150deg, #0b3faa 0%, #0a5fe8 35%, #0a78ff 60%, #1a9fff 100%);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS PARTICLES ── */
+    #particles {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    body::after {
+      content: "";
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none; z-index: 1;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      padding: 0 6%;
+      height: 70px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(20px) saturate(1.4);
+      background: rgba(10,63,168,0.25);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.85rem; font-weight: 800;
+      text-decoration: none; letter-spacing: 2px;
+      display: flex; align-items: center; gap: 2px;
+    }
+    .logo .ka   { color: var(--white); }
+    .logo .poot { color: var(--accent); }
+    .logo-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      margin-left: 3px; margin-bottom: 14px;
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.4; transform:scale(0.7); }
+    }
+
+    nav { display:flex; align-items:center; gap:8px; }
+    nav a {
+      color: rgba(255,255,255,0.80); text-decoration:none;
+      font-weight:500; font-size:0.92rem;
+      padding: 8px 16px; border-radius:999px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    nav a:hover { color:var(--white); background: rgba(255,255,255,0.10); }
+    nav a.active {
+      color: #1f2430; background: var(--accent);
+      font-weight: 700;
+      box-shadow: var(--shadow-gold);
+    }
+
+    /* ── PAGE GRID ── */
+    .page {
+      position: relative; z-index: 2;
+      min-height: calc(100vh - 70px);
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      grid-template-rows: auto;
+      gap: 0;
+    }
+
+    /* ════════════════════════════════════
+       SIDEBAR ESQUERDA
+    ════════════════════════════════════ */
+    .sidebar {
+      padding: 2.5rem 2rem 2.5rem 6%;
+      display: flex; flex-direction: column; gap: 1.5rem;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      position: relative;
+    }
+
+    /* brilho lateral */
+    .sidebar::before {
+      content: "";
+      position: absolute; top: 0; right: 0;
+      width: 1px; height: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(255,213,74,0.4), transparent);
+    }
+
+    /* ─ Hero card (avatar + nome) ─ */
+    .hero-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.06) 100%);
+      border: 1px solid var(--glass-b);
+      border-radius: 28px;
+      padding: 2rem 1.5rem 1.6rem;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-deep);
+      position: relative; overflow: hidden;
+      animation: slideIn 0.6s cubic-bezier(0.34,1.2,0.64,1) both;
+    }
+    .hero-card::before {
+      content: "";
+      position: absolute; top: -60px; right: -60px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,213,74,0.22), transparent 70%);
+      pointer-events: none;
+    }
+    .hero-card::after {
+      content: "";
+      position: absolute; bottom: -40px; left: -40px;
+      width: 120px; height: 120px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(67,184,255,0.18), transparent 70%);
+      pointer-events: none;
+    }
+
+    .avatar-ring {
+      position: relative;
+      display: inline-block; margin-bottom: 1.1rem;
+    }
+    /* anel pulsante */
+    .avatar-ring::before {
+      content: "";
+      position: absolute; inset: -6px;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent), #ff9f43, var(--blue-light), var(--accent));
+      animation: spin 4s linear infinite;
+      z-index: 0;
+    }
+    .avatar-ring::after {
+      content: "";
+      position: absolute; inset: -3px;
+      border-radius: 50%;
+      background: var(--blue-mid);
+      z-index: 1;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .avatar {
+      width: 110px; height: 110px; border-radius: 50%;
+      position: relative; z-index: 2;
+      background: linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.08));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: 900; color: var(--accent);
+      overflow: hidden; cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      font-family: 'Syne', sans-serif;
+    }
+    .avatar:hover { transform: scale(1.08); }
+    .avatar img   { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+
+    .avatar-edit {
+      position: absolute; bottom: 4px; right: 4px; z-index: 3;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--accent); border: 2.5px solid var(--blue-mid);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 13px; color: #1a1a2e;
+      transition: transform 0.2s, background 0.2s;
+      box-shadow: 0 4px 12px rgba(255,213,74,0.4);
+    }
+    .avatar-edit:hover { transform: scale(1.2) rotate(-15deg); background: #ffe06b; }
+    #avatar-input { display:none; }
+
+    .player-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem; font-weight: 800;
+      margin-bottom: 0.25rem; letter-spacing: 0.5px;
+    }
+    .player-handle {
+      font-size: 0.82rem; color: var(--soft);
+      margin-bottom: 0.9rem;
+    }
+    .points-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 0.45rem 1.2rem;
+      background: rgba(255,213,74,0.15);
+      border: 1px solid rgba(255,213,74,0.50);
+      border-radius: 999px;
+      color: var(--accent); font-weight: 700; font-size: 0.95rem;
+      box-shadow: var(--shadow-gold);
+    }
+    .points-pill .star { font-size: 1rem; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
+
+    /* ─ Nível / XP ─ */
+    .level-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 20px; padding: 1.2rem 1.4rem;
+      backdrop-filter: blur(8px);
+      animation: slideIn 0.6s 0.1s cubic-bezier(0.34,1.2,0.64,1) both;
+    }
+    .level-top {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom: 0.9rem;
+    }
+    .level-badge {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .level-num {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--accent); color: #1a1a2e;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 1rem;
+      font-family: 'Syne', sans-serif;
+    }
+    .level-info { line-height: 1.2; }
+    .level-info strong { font-size:0.92rem; display:block; }
+    .level-info span   { font-size:0.75rem; color:var(--soft); }
+    .level-next { font-size:0.78rem; color:var(--soft); }
+    .xp-track {
+      height: 8px; border-radius:999px;
+      background: rgba(255,255,255,0.12); overflow:hidden;
+      position:relative;
+    }
+    .xp-fill {
+      height: 100%; border-radius:999px; width: 0%;
+      background: linear-gradient(90deg, #f2bf18, #ffd54a, #ffe98a);
+      box-shadow: 0 0 12px rgba(255,213,74,0.6);
+      transition: width 1.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .xp-caption {
+      display:flex; justify-content:space-between;
+      margin-top:0.5rem; font-size:0.73rem; color:var(--soft);
+    }
+
+    /* ─ Stats grid ─ */
+    .stats-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+      animation: slideIn 0.6s 0.2s cubic-bezier(0.34,1.2,0.64,1) both;
+    }
+    .stat-tile {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 18px; padding: 1rem 0.8rem;
+      text-align:center; cursor:default;
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1),
+                  background 0.25s, box-shadow 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .stat-tile::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,213,74,0.12), transparent);
+      opacity: 0; transition: opacity 0.25s;
+    }
+    .stat-tile:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+    .stat-tile:hover::before { opacity: 1; }
+    .stat-icon  { font-size:1.5rem; margin-bottom:0.3rem; display:block; }
+    .stat-value {
+      font-family:'Syne',sans-serif;
+      display:block; font-size:1.3rem; font-weight:800;
+      color:var(--accent); margin-bottom:2px;
+    }
+    .stat-label { font-size:0.76rem; color:var(--soft); font-weight:500; }
+
+    /* ─ Conquistas ─ */
+    .badges-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 20px; padding: 1.2rem 1.4rem;
+      animation: slideIn 0.6s 0.3s cubic-bezier(0.34,1.2,0.64,1) both;
+    }
+    .card-label {
+      font-size:0.75rem; font-weight:700; letter-spacing:0.12em;
+      text-transform:uppercase; color:var(--soft); margin-bottom:0.9rem;
+    }
+    .badges-row { display:flex; gap:0.6rem; flex-wrap:wrap; }
+    .bdg {
+      width:50px; height:50px; border-radius:14px;
+      background:rgba(255,213,74,0.12); border:1px solid rgba(255,213,74,0.30);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.5rem; cursor:default;
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), background 0.2s, box-shadow 0.2s;
+      position:relative;
+    }
+    .bdg:hover {
+      transform:scale(1.22) rotate(-5deg);
+      background: rgba(255,213,74,0.28);
+      box-shadow: 0 8px 24px rgba(255,213,74,0.30);
+    }
+    .bdg.locked { opacity:0.28; filter:grayscale(1) blur(0.5px); }
+    .bdg .bdg-tip {
+      position:absolute; bottom:calc(100% + 8px); left:50%;
+      transform:translateX(-50%) translateY(4px);
+      background:rgba(10,20,50,0.92); color:#fff;
+      font-size:0.7rem; font-family:'Poppins',sans-serif;
+      padding:4px 10px; border-radius:8px; white-space:nowrap;
+      opacity:0; pointer-events:none;
+      transition:opacity 0.2s, transform 0.2s;
+    }
+    .bdg:hover .bdg-tip { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    @keyframes slideIn {
+      from { opacity:0; transform:translateX(-18px); }
+      to   { opacity:1; transform:translateX(0); }
+    }
+
+    /* ════════════════════════════════════
+       COLUNA DIREITA — conteúdo principal
+    ════════════════════════════════════ */
+    .main-col {
+      padding: 2.5rem 6% 2.5rem 2.5rem;
+      display:flex; flex-direction:column; gap:1.6rem;
+      overflow-y: auto;
+    }
+
+    /* ─ secção cabeçalho ─ */
+    .sec-head {
+      display:flex; align-items:center; gap:10px; margin-bottom:0.1rem;
+    }
+    .sec-head .sec-icon {
+      width:32px; height:32px; border-radius:10px;
+      background:rgba(255,213,74,0.18); border:1px solid rgba(255,213,74,0.35);
+      display:flex; align-items:center; justify-content:center; font-size:1rem;
+    }
+    .sec-head h2 {
+      font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:700;
+    }
+    .sec-head .sec-sub { font-size:0.78rem; color:var(--soft); margin-left:auto; }
+
+    /* ─ card de conta ─ */
+    .account-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.06) 100%);
+      border:1px solid var(--glass-b);
+      border-radius:24px; padding:1.8rem;
+      backdrop-filter:blur(16px);
+      box-shadow:var(--shadow-deep);
+      position:relative; overflow:hidden;
+      animation: riseIn 0.6s 0.1s cubic-bezier(0.34,1.2,0.64,1) both;
+    }
+    .account-card::before {
+      content:""; position:absolute; top:-80px; right:-80px;
+      width:200px; height:200px; border-radius:50%;
+      background:radial-gradient(circle, rgba(255,213,74,0.15), transparent 70%);
+      pointer-events:none;
+    }
+
+    @keyframes riseIn {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .fields-grid { display:flex; flex-direction:column; gap:1rem; }
+    
+    .field-group label {
+      display:block; margin-bottom:6px;
+      font-size:0.75rem; font-weight:700;
+      color:rgba(255,255,255,0.50); letter-spacing:0.1em; text-transform:uppercase;
+    }
+    .field-wrap {
+      position:relative; display:flex; align-items:center;
+    }
+    .field-wrap .f-icon {
+      position:absolute; left:14px; font-size:14px;
+      opacity:0.55; pointer-events:none; z-index:1;
+    }
+    .field-wrap .f-val, .field-wrap input {
+      width:100%; padding:13px 16px 13px 42px;
+      border-radius:14px; font-size:0.93rem;
+      font-family:'Poppins',sans-serif; color:var(--white);
+    }
+    .field-wrap .f-val {
+      background:rgba(255,255,255,0.07);
+      border:1px solid rgba(255,255,255,0.10);
+      font-weight:500;
+      transition: background 0.2s;
+    }
+    .field-wrap .f-val.masked { letter-spacing:0.24em; }
+    .field-wrap input {
+      background:rgba(255,255,255,0.10);
+      border:1px solid rgba(255,255,255,0.20);
+      outline:none; display:none;
+      transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+    }
+    .field-wrap input::placeholder { color:rgba(255,255,255,0.35); }
+    .field-wrap input:focus {
+      border-color:rgba(255,213,74,0.80);
+      box-shadow:0 0 0 4px rgba(255,213,74,0.15);
+      background:rgba(255,255,255,0.15);
+    }
+
+    /* ─ botões de ação ─ */
+    .action-row {
+      display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;
+      margin-top:1.4rem; position:relative; z-index:1;
+    }
+    .action-row.editing { grid-template-columns:1fr 1fr; }
+
+    .btn {
+      border:none; border-radius:14px;
+      padding:13px 18px; font-size:0.93rem; font-weight:700;
+      cursor:pointer; font-family:'Poppins',sans-serif;
+      transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
+                 box-shadow 0.2s, background 0.2s, opacity 0.2s;
+      display:flex; align-items:center; justify-content:center; gap:7px;
+    }
+    .btn:active { transform:scale(0.96) !important; }
+    .btn-gold {
+      background:var(--accent); color:#1a1a2e;
+      box-shadow:0 10px 28px rgba(255,213,74,0.30);
+      grid-column: span 2;
+    }
+    .btn-gold:hover { transform:translateY(-3px); box-shadow:0 16px 36px rgba(255,213,74,0.40); background:#ffe06b; }
+    .btn-ghost {
+      background:rgba(255,255,255,0.08);
+      color:var(--white); border:1px solid rgba(255,255,255,0.20);
+      grid-column: span 2;
+    }
+    .btn-ghost:hover { transform:translateY(-3px); background:rgba(255,255,255,0.14); }
+    .btn-save { display:none; }
+    .btn-cancel { display:none; }
+    .btn-red {
+      background:rgba(255,80,80,0.12);
+      color:#ff7070; border:1px solid rgba(255,80,80,0.30);
+      grid-column: span 2;
+    }
+    .btn-red:hover { transform:translateY(-3px); background:rgba(255,80,80,0.20); box-shadow:0 8px 24px rgba(255,80,80,0.18); }
+
+    /* ─ atividade recente ─ */
+    .activity-card {
+      background:linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 100%);
+      border:1px solid var(--glass-b);
+      border-radius:24px; padding:1.6rem;
+      backdrop-filter:blur(12px);
+      animation:riseIn 0.6s 0.2s cubic-bezier(0.34,1.2,0.64,1) both;
+    }
+    .activity-list { display:flex; flex-direction:column; gap:0.6rem; margin-top:1.1rem; }
+    .act-row {
+      display:flex; align-items:center; gap:1rem;
+      padding:0.85rem 1rem; border-radius:16px;
+      background:rgba(255,255,255,0.07);
+      border:1px solid rgba(255,255,255,0.10);
+      cursor:default;
+      transition:background 0.2s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+    }
+    .act-row:hover { background:rgba(255,255,255,0.13); transform:translateX(4px); box-shadow:0 6px 20px rgba(0,0,0,0.15); }
+    .act-emoji { font-size:1.35rem; flex-shrink:0; }
+    .act-info  { flex:1; min-width:0; }
+    .act-name  { font-size:0.88rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .act-date  { font-size:0.74rem; color:var(--soft); margin-top:1px; }
+    .act-score-wrap { flex-shrink:0; text-align:right; }
+    .act-score {
+      font-family:'Syne',sans-serif;
+      font-size:0.95rem; font-weight:800;
+      color:var(--accent);
+    }
+    .act-stars { font-size:0.65rem; color:rgba(255,213,74,0.6); margin-top:1px; }
+
+    /* ─ progresso por categoria ─ */
+    .progress-card {
+      background:linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 100%);
+      border:1px solid var(--glass-b);
+      border-radius:24px; padding:1.6rem;
+      backdrop-filter:blur(12px);
+      animation:riseIn 0.6s 0.3s cubic-bezier(0.34,1.2,0.64,1) both;
+    }
+    .prog-list { display:flex; flex-direction:column; gap:0.85rem; margin-top:1.1rem; }
+    
+    .prog-top {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:0.4rem;
+    }
+    .prog-name { font-size:0.85rem; font-weight:600; display:flex; align-items:center; gap:7px; }
+    .prog-pct  { font-size:0.80rem; font-weight:700; color:var(--accent); }
+    .prog-bar  { height:7px; border-radius:999px; background:rgba(255,255,255,0.12); overflow:hidden; }
+    .prog-fill {
+      height:100%; border-radius:999px; width:0;
+      transition:width 1.4s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.65); z-index:300;
+      align-items:center; justify-content:center; padding:1rem;
+      backdrop-filter:blur(4px);
+    }
+    .modal-overlay.open { display:flex; }
+    .modal {
+      background:linear-gradient(135deg, rgba(10,60,160,0.95), rgba(8,40,120,0.97));
+      border:1px solid rgba(255,213,74,0.35);
+      border-radius:28px; padding:2.2rem;
+      max-width:380px; width:100%;
+      box-shadow:0 30px 70px rgba(0,0,0,0.50);
+      animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes popIn {
+      from { opacity:0; transform:scale(0.85); }
+      to   { opacity:1; transform:scale(1); }
+    }
+    .modal-icon { font-size:2.4rem; margin-bottom:0.8rem; display:block; text-align:center; }
+    .modal h2   { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; margin-bottom:0.6rem; text-align:center; }
+    .modal p    { font-size:0.90rem; color:var(--soft); margin-bottom:1.8rem; line-height:1.7; text-align:center; }
+    .modal-btns { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+    .modal-btns .btn { grid-column:auto; }
+
+    /* ── TOAST ── */
+    #toast {
+      position:fixed; bottom:2rem; left:50%;
+      transform:translateX(-50%) translateY(100px);
+      background:rgba(8,20,55,0.95);
+      color:#fff; padding:0.8rem 1.8rem;
+      border-radius:16px;
+      border:1px solid rgba(255,213,74,0.45);
+      font-size:0.92rem; font-weight:600;
+      z-index:999; white-space:nowrap;
+      box-shadow:0 12px 36px rgba(0,0,0,0.35);
+      transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      opacity:0; pointer-events:none;
+    }
+    #toast.show  { transform:translateX(-50%) translateY(0); opacity:1; }
+    #toast.error { border-color:rgba(255,100,100,0.6); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:1000px) {
+      .page { grid-template-columns:1fr; }
+      .sidebar {
+        border-right:none;
+        border-bottom:1px solid rgba(255,255,255,0.08);
+        padding:2rem 5%;
+      }
+      .main-col { padding:2rem 5%; }
+      .sidebar::before { display:none; }
+    }
+    @media (max-width:640px) {
+      header { padding:0 5%; }
+      nav a  { padding:6px 10px; font-size:0.84rem; }
+      .logo  { font-size:1.55rem; }
+      .action-row { grid-template-columns:1fr; }
+      .btn-gold, .btn-ghost, .btn-save, .btn-cancel, .btn-red { grid-column:auto; }
+      .modal-btns { grid-template-columns:1fr; }
+    }
+  
+    /* ═══ HEADER UNIFICADO (KAPOOT) ═══ */
+    .kapoot-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 6%;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(20px) saturate(1.4);
+      background: rgba(10,63,168,0.25);
+      width: 100%;
+    }
+
+    .kapoot-logo {
+      font-family: 'Syne', 'Poppins', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      text-decoration: none;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      color: #fff;
+    }
+    .kapoot-logo .ka   { color: #ffffff; }
+    .kapoot-logo .poot { color: #ffd54a; }
+    .kapoot-logo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffd54a;
+      margin-left: 3px;
+      margin-bottom: 14px;
+      animation: kapoot-blink 2s ease-in-out infinite;
+    }
+    @keyframes kapoot-blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .kapoot-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .kapoot-nav a {
+      color: rgba(255,255,255,0.80);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.92rem;
+      padding: 8px 16px;
+      border-radius: 999px;
+      transition: all 0.25s ease;
+      border: none;
+    }
+    .kapoot-nav a:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.10);
+    }
+    .kapoot-nav a.active {
+      color: #1f2430;
+      background: #ffd54a;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(255,213,74,0.30);
+    }
+
+    /* Toast partilhado */
+    #kapoot-toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(8,20,55,0.95);
+      color: #fff;
+      padding: 0.75rem 1.6rem;
+      border-radius: 14px;
+      border: 1px solid rgba(232,218,49,0.45);
+      font-size: 0.95rem;
+      font-weight: 600;
+      z-index: 9999;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #kapoot-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 640px) {
+      .kapoot-header { padding: 0 5%; height: auto; padding: 14px 5%; flex-wrap: wrap; }
+      .kapoot-nav a  { padding: 6px 10px; font-size: 0.84rem; }
+      .kapoot-logo   { font-size: 1.55rem; }
+    }
+    /* ═══ FIM HEADER UNIFICADO ═══ */
+
+  </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- ══ HEADER ══ -->
+<header class="kapoot-header">
+    <a class="kapoot-logo" href="index.html" aria-label="KAPOOT - Página inicial">
+      <span class="ka">KA</span><span class="poot">POOT</span>
+      <span class="kapoot-logo-dot"></span>
+    </a>
+    <nav class="kapoot-nav" aria-label="Navegação principal">
+      <a href="index.html"       id="kpt-nav-inicio">Início</a>
+      <a href="ranking.html"     id="kpt-nav-ranking">Ranking</a>
+      <a href="quiz.html"        id="kpt-nav-quiz">Jogar</a>
+      <a href="create_quiz.html" id="kpt-nav-criar">Criar Quiz</a>
+      <a href="profile.html"     id="kpt-nav-perfil" style="display:none">Perfil</a>
+      <a href="login.html"       id="kpt-nav-auth">Entrar</a>
+    </nav>
+  </header>
+
+<!-- ══ PAGE ══ -->
+<div class="page">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+
+    <!-- Hero card -->
+    <div class="hero-card">
+      <div class="avatar-ring">
+        <div class="avatar" id="avatar-display" onclick="triggerAvatarUpload()">JD</div>
+        <div class="avatar-edit" onclick="triggerAvatarUpload()" title="Alterar foto">✎</div>
+        <input type="file" id="avatar-input" accept="image/*" onchange="handleAvatarChange(event)">
+      </div>
+      <p class="player-name" id="header-username">JogadorX</p>
+      <p class="player-handle">@jogadorx · Membro desde Jun 2024</p>
+      <div class="points-pill">
+        <span class="star">★</span>
+        <span id="header-points">4 250 pontos</span>
+      </div>
+    </div>
+
+    <!-- Nível XP -->
+    <div class="level-card">
+      <div class="level-top">
+        <div class="level-badge">
+          <div class="level-num">8</div>
+          <div class="level-info">
+            <strong>Mestre Quiz</strong>
+            <span>3 100 / 5 000 XP</span>
+          </div>
+        </div>
+        <span class="level-next">Nível 9 →</span>
+      </div>
+      <div class="xp-track">
+        <div class="xp-fill" id="xp-fill" data-pct="62"></div>
+      </div>
+      <div class="xp-caption"><span>XP atual</span><span>62%</span></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-tile">
+        <span class="stat-icon">🎮</span>
+        <span class="stat-value">32</span>
+        <span class="stat-label">Jogados</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-icon">🏆</span>
+        <span class="stat-value">#14</span>
+        <span class="stat-label">Rank global</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-icon">🔥</span>
+        <span class="stat-value">7</span>
+        <span class="stat-label">Streak dias</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-icon">🎯</span>
+        <span class="stat-value">84%</span>
+        <span class="stat-label">Taxa acerto</span>
+      </div>
+    </div>
+
+    <!-- Conquistas -->
+    <div class="badges-card">
+      <p class="card-label">Conquistas desbloqueadas</p>
+      <div class="badges-row">
+        <div class="bdg"><span>🥇</span><span class="bdg-tip">Primeira vitória</span></div>
+        <div class="bdg"><span>🎯</span><span class="bdg-tip">10 quizzes jogados</span></div>
+        <div class="bdg"><span>🔥</span><span class="bdg-tip">7 dias seguidos</span></div>
+        <div class="bdg"><span>⭐</span><span class="bdg-tip">Pontuação perfeita</span></div>
+        <div class="bdg locked"><span>🚀</span><span class="bdg-tip">Bloqueado</span></div>
+        <div class="bdg locked"><span>💎</span><span class="bdg-tip">Bloqueado</span></div>
+        <div class="bdg locked"><span>👑</span><span class="bdg-tip">Bloqueado</span></div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ═══ COLUNA DIREITA ═══ -->
+  <div class="main-col">
+
+    <!-- Conta -->
+    <div>
+      <div class="sec-head">
+        <div class="sec-icon">👤</div>
+        <h2>Informações da conta</h2>
+        <span class="sec-sub">Última edição: hoje</span>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <div class="fields-grid">
+
+        <div class="field-group">
+          <label>Username</label>
+          <div class="field-wrap">
+            <span class="f-icon">👤</span>
+            <div class="f-val" id="username-display">JogadorX</div>
+            <input id="username-input" type="text" value="JogadorX" maxlength="20" placeholder="Username">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Email</label>
+          <div class="field-wrap">
+            <span class="f-icon">✉</span>
+            <div class="f-val" id="email-display">jogador@email.com</div>
+            <input id="email-input" type="email" value="jogador@email.com" placeholder="Email">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Password</label>
+          <div class="field-wrap">
+            <span class="f-icon">🔒</span>
+            <div class="f-val masked" id="pw-display">••••••••</div>
+            <input id="pw-input" type="password" placeholder="Nova password">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="action-row" id="action-row">
+        <button class="btn btn-gold  btn-edit"   onclick="enterEditMode()">✏️ Editar perfil</button>
+        <button class="btn btn-gold  btn-save"   onclick="saveChanges()">💾 Guardar</button>
+        <button class="btn btn-ghost btn-cancel" onclick="cancelEdit()">✕ Cancelar</button>
+        <button class="btn btn-red"              onclick="openDeleteModal()">🗑️ Apagar conta</button>
+      </div>
+    </div>
+
+    <!-- Atividade recente -->
+    <div>
+      <div class="sec-head">
+        <div class="sec-icon">⚡</div>
+        <h2>Atividade recente</h2>
+        <span class="sec-sub">Últimos 7 dias</span>
+      </div>
+    </div>
+
+    <div class="activity-card">
+      <div class="activity-list">
+        <div class="act-row">
+          <span class="act-emoji">🌍</span>
+          <div class="act-info">
+            <p class="act-name">Geografia Mundial</p>
+            <p class="act-date">Hoje · 14:32</p>
+          </div>
+          <div class="act-score-wrap">
+            <p class="act-score">950 pts</p>
+            <p class="act-stars">★★★★★</p>
+          </div>
+        </div>
+        <div class="act-row">
+          <span class="act-emoji">🔬</span>
+          <div class="act-info">
+            <p class="act-name">Ciências — Nível 3</p>
+            <p class="act-date">Ontem · 20:11</p>
+          </div>
+          <div class="act-score-wrap">
+            <p class="act-score">780 pts</p>
+            <p class="act-stars">★★★★☆</p>
+          </div>
+        </div>
+        <div class="act-row">
+          <span class="act-emoji">🎬</span>
+          <div class="act-info">
+            <p class="act-name">Cinema &amp; Cultura Pop</p>
+            <p class="act-date">12 Jul · 18:45</p>
+          </div>
+          <div class="act-score-wrap">
+            <p class="act-score">1 100 pts</p>
+            <p class="act-stars">★★★★★</p>
+          </div>
+        </div>
+        <div class="act-row">
+          <span class="act-emoji">📐</span>
+          <div class="act-info">
+            <p class="act-name">Matemática Avançada</p>
+            <p class="act-date">10 Jul · 09:20</p>
+          </div>
+          <div class="act-score-wrap">
+            <p class="act-score">620 pts</p>
+            <p class="act-stars">★★★☆☆</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progresso por categoria -->
+    <div>
+      <div class="sec-head">
+        <div class="sec-icon">📊</div>
+        <h2>Progresso por categoria</h2>
+        <span class="sec-sub">Baseado nos teus quizzes</span>
+      </div>
+    </div>
+
+    <div class="progress-card">
+      <div class="prog-list">
+        <div class="prog-item">
+          <div class="prog-top">
+            <span class="prog-name">🌍 Geografia</span>
+            <span class="prog-pct">88%</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" data-w="88" style="background:linear-gradient(90deg,#0a78ff,#43b8ff)"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-top">
+            <span class="prog-name">🔬 Ciências</span>
+            <span class="prog-pct">74%</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" data-w="74" style="background:linear-gradient(90deg,#f2bf18,#ffd54a)"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-top">
+            <span class="prog-name">🎬 Cultura Pop</span>
+            <span class="prog-pct">92%</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" data-w="92" style="background:linear-gradient(90deg,#1bb975,#5de8a8)"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-top">
+            <span class="prog-name">📐 Matemática</span>
+            <span class="prog-pct">61%</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" data-w="61" style="background:linear-gradient(90deg,#e24b4a,#ff8080)"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-top">
+            <span class="prog-name">📚 História</span>
+            <span class="prog-pct">79%</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill" data-w="79" style="background:linear-gradient(90deg,#8b5cf6,#c084fc)"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MODAL ══ -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <span class="modal-icon">⚠️</span>
+    <h2>Apagar conta?</h2>
+    <p>Esta ação é permanente e não pode ser desfeita. Todos os teus dados, pontuações e conquistas serão eliminados para sempre.</p>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeDeleteModal()">Cancelar</button>
+      <button class="btn btn-red"   onclick="confirmDelete()">Apagar tudo</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  /* ── PARTICLES ── */
+  (function(){
+    const c = document.getElementById('particles');
+    const ctx = c.getContext('2d');
+    let W, H, pts = [];
+    function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    for(let i=0;i<55;i++) pts.push({
+      x:Math.random()*1920, y:Math.random()*1080,
+      r:Math.random()*1.8+0.4,
+      dx:(Math.random()-0.5)*0.3,
+      dy:(Math.random()-0.5)*0.3,
+      a:Math.random()
+    });
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      pts.forEach(p=>{
+        p.x+=p.dx; p.y+=p.dy;
+        if(p.x<0||p.x>W) p.dx*=-1;
+        if(p.y<0||p.y>H) p.dy*=-1;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(255,255,255,${0.12+p.a*0.12})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* ── BARRA XP ANIMADA ── */
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const xp = document.getElementById('xp-fill');
+      if(xp) xp.style.width = xp.dataset.pct + '%';
+      document.querySelectorAll('.prog-fill').forEach(el => {
+        el.style.width = el.dataset.w + '%';
+      });
+    }, 300);
+  });
+
+  /* ── DADOS (substituir por sessão/API) ── */
+  const playerData = { username:"JogadorX", email:"jogador@email.com" };
+
+  /* ── EDIÇÃO ── */
+  function enterEditMode(){
+    swap('username',true); swap('email',true); swap('pw',true);
+    document.querySelector('.btn-edit').style.display   = 'none';
+    document.querySelector('.btn-save').style.display   = 'flex';
+    document.querySelector('.btn-cancel').style.display = 'flex';
+  }
+  function cancelEdit(){
+    document.getElementById('username-input').value = playerData.username;
+    document.getElementById('email-input').value    = playerData.email;
+    document.getElementById('pw-input').value       = '';
+    exitEditMode();
+  }
+  function exitEditMode(){
+    swap('username',false); swap('email',false); swap('pw',false);
+    document.querySelector('.btn-edit').style.display   = 'flex';
+    document.querySelector('.btn-save').style.display   = 'none';
+    document.querySelector('.btn-cancel').style.display = 'none';
+  }
+  function saveChanges(){
+    const u = document.getElementById('username-input').value.trim();
+    const e = document.getElementById('email-input').value.trim();
+    const p = document.getElementById('pw-input').value;
+    if(!u)              { showToast('O username não pode estar vazio!',true); return; }
+    if(!e||!e.includes('@')){ showToast('Email inválido!',true); return; }
+    playerData.username=u; playerData.email=e;
+    document.getElementById('username-display').textContent = u;
+    document.getElementById('header-username').textContent  = u;
+    document.getElementById('email-display').textContent    = e;
+    const av = document.getElementById('avatar-display');
+    if(!av.querySelector('img')) av.textContent = u.slice(0,2).toUpperCase();
+    exitEditMode();
+    showToast('✅ Perfil atualizado com sucesso!');
+    /*
+      BACKEND:
+      fetch('api/profile_update.php',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({username:u,email:e,password:p||null})
+      });
+    */
+  }
+
+  /* ── AVATAR ── */
+  function triggerAvatarUpload(){ document.getElementById('avatar-input').click(); }
+  function handleAvatarChange(e){
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const av = document.getElementById('avatar-display');
+      av.textContent='';
+      const img = document.createElement('img');
+      img.src=ev.target.result; av.appendChild(img);
+      showToast('🖼️ Foto atualizada!');
+    };
+    reader.readAsDataURL(file);
+    /*
+      BACKEND:
+      const fd=new FormData(); fd.append('avatar',file);
+      fetch('api/avatar_upload.php',{method:'POST',body:fd});
+    */
+  }
+
+  /* ── MODAL ── */
+  function openDeleteModal()  { document.getElementById('delete-modal').classList.add('open'); }
+  function closeDeleteModal() { document.getElementById('delete-modal').classList.remove('open'); }
+  function confirmDelete(){
+    closeDeleteModal();
+    showToast('👋 Conta eliminada. Até logo!');
+    /* BACKEND: fetch('api/profile_delete.php',{method:'POST'}).then(()=>location.href='index.php'); */
+  }
+
+  /* ── TOAST ── */
+  function showToast(msg,isError=false){
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.className=isError?'error':'';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2800);
+  }
+
+  /* ── HELPER ── */
+  function swap(f,toInput){
+    document.getElementById(f+'-display').style.display = toInput?'none':'block';
+    document.getElementById(f+'-input').style.display   = toInput?'block':'none';
+  }
+</script>
+  <script src="kapoot-header.js"></script>
+
+  <script>
+    /* KAPOOT DB INTEGRATION — profile.html */
+    (function () {
+      if (!Kapoot.isLoggedIn()) {
+        kapootToast('Precisas de iniciar sessão! 🔐');
+        setTimeout(function () {
+          window.location.href = 'login.html';
+        }, 1500);
+        return;
+      }
+
+      function initProfile() {
+        /* Carrega dados reais da BD */
+        fetch('api/profile.php')
+          .then(function (r) {
+            if (r.status === 401) {
+              window.location.href = 'login.html';
+              return null;
+            }
+            return r.ok ? r.json() : null;
+          })
+          .then(function (d) {
+            if (!d) return;
+
+            /* Atualiza playerData (que existe no teu script original) */
+            if (typeof window.playerData !== 'undefined') {
+              window.playerData.username = d.nome;
+              window.playerData.email    = d.email;
+            }
+
+            /* Atualiza campos visíveis */
+            const setText = function (id, val) {
+              const el = document.getElementById(id);
+              if (el) el.textContent = val;
+            };
+            const setValue = function (id, val) {
+              const el = document.getElementById(id);
+              if (el) el.value = val;
+            };
+
+            setText('header-username',  d.nome);
+            setText('username-display', d.nome);
+            setText('email-display',    d.email);
+            setValue('username-input',  d.nome);
+            setValue('email-input',     d.email);
+
+            /* Pontos */
+            const pts = (d.total_pontos || 0).toLocaleString('pt-PT');
+            setText('header-points', pts + ' pontos');
+
+            /* Avatar com iniciais */
+            const av = document.getElementById('avatar-display');
+            if (av && !av.querySelector('img')) {
+              av.textContent = (d.nome || '?').slice(0, 2).toUpperCase();
+            }
+          })
+          .catch(function (e) { console.error(e); });
+
+        /* Override do saveChanges para enviar à BD */
+        if (typeof window.saveChanges === 'function') {
+          const origSave = window.saveChanges;
+          window.saveChanges = function () {
+            const u = document.getElementById('username-input').value.trim();
+            const e = document.getElementById('email-input').value.trim();
+            const p = document.getElementById('pw-input').value;
+
+            if (!u) { (window.showToast || kapootToast)('O username não pode estar vazio!', true); return; }
+            if (!e || e.indexOf('@') === -1) { (window.showToast || kapootToast)('Email inválido!', true); return; }
+
+            fetch('api/profile_update.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: u, email: e, password: p || null })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (resp) {
+              if (resp.ok) {
+                origSave();
+                (window.showToast || kapootToast)('✅ Perfil guardado na BD!');
+              } else {
+                (window.showToast || kapootToast)('❌ ' + (resp.erro || 'Erro ao guardar.'), true);
+              }
+            })
+            .catch(function () {
+              (window.showToast || kapootToast)('❌ Erro de ligação.', true);
+            });
+          };
+        }
+
+        /* Override do confirmDelete */
+        if (typeof window.confirmDelete === 'function') {
+          window.confirmDelete = function () {
+            if (typeof closeDeleteModal === 'function') closeDeleteModal();
+            fetch('api/profile_delete.php', { method: 'POST' })
+              .then(function () {
+                Kapoot.logout();
+                (window.showToast || kapootToast)('👋 Conta eliminada.');
+                setTimeout(function () {
+                  window.location.href = 'index.html';
+                }, 1500);
+              })
+              .catch(function () {
+                (window.showToast || kapootToast)('❌ Erro ao eliminar.', true);
+              });
+          };
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProfile);
+      } else {
+        initProfile();
+      }
+    })();
+  </script>
+
+</body>
+</html>
